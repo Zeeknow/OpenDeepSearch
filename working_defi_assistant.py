@@ -13,8 +13,57 @@ from urllib.parse import urlparse, parse_qs
 from dotenv import load_dotenv
 import traceback
 import time
+import logging
+from datetime import datetime
 
 load_dotenv()
+
+# API keys are now loaded from .env file
+# Make sure your .env file contains:
+# SERPER_API_KEY=your_serper_key
+# OPENROUTER_API_KEY=your_openrouter_key
+# JINA_API_KEY=your_jina_key
+# LITELLM_API_KEY=your_litellm_key
+# LITELLM_MODEL_ID=openrouter/google/gemini-2.0-flash-001
+# ETHERSCAN_API_KEY=your_etherscan_key
+
+# Import OpenDeepSearch
+try:
+    from opendeepsearch.ods_tool import OpenDeepSearchTool
+    logger = logging.getLogger(__name__)
+    logger.info("OpenDeepSearch imported successfully")
+except ImportError as e:
+    logger = logging.getLogger(__name__)
+    logger.error(f"Failed to import OpenDeepSearch: {e}")
+    OpenDeepSearchTool = None
+
+# Setup logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.StreamHandler(),
+        logging.FileHandler('defi_assistant.log')
+    ]
+)
+logger = logging.getLogger(__name__)
+
+# Initialize OpenDeepSearch tool globally
+search_tool = None
+if OpenDeepSearchTool:
+    try:
+        search_tool = OpenDeepSearchTool(
+            model_name="openrouter/google/gemini-2.0-flash-001",
+            reranker="jina",
+            search_provider="serper",
+            serper_api_key=os.getenv("SERPER_API_KEY")
+        )
+        if not search_tool.is_initialized:
+            search_tool.setup()
+        logger.info("OpenDeepSearch tool initialized successfully")
+    except Exception as e:
+        logger.error(f"Failed to initialize OpenDeepSearch tool: {e}")
+        search_tool = None
 
 class DeFiAssistantHandler(BaseHTTPRequestHandler):
     # Helper to write JSON responses reliably
@@ -50,6 +99,7 @@ class DeFiAssistantHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         parsed = urlparse(self.path)
         path = parsed.path
+        logger.info(f"GET request: {path} - Query: {parsed.query}")
         try:
             if path == "/":
                 self.serve_html()
@@ -58,34 +108,47 @@ class DeFiAssistantHandler(BaseHTTPRequestHandler):
             elif path == "/risk":
                 self.handle_risk_assessment(parsed.query)
             else:
+                logger.warning(f"GET 404: {path}")
                 self.send_json_response({"success": False, "error": "Not found"}, status=404)
         except Exception as e:
-            print("GET handler exception:", e)
+            logger.error(f"GET handler exception: {e}")
             traceback.print_exc()
             self.send_json_response({"success": False, "error": str(e)}, status=500)
 
     def do_POST(self):
         parsed = urlparse(self.path)
         path = parsed.path
+        logger.info(f"POST request: {path}")
         try:
             if path == "/chat":
                 content_length = int(self.headers.get("Content-Length", 0))
                 raw = self.rfile.read(content_length)
                 try:
                     data = json.loads(raw.decode("utf-8"))
-                except json.JSONDecodeError:
+                    logger.info(f"Chat request data: {data}")
+                except json.JSONDecodeError as e:
+                    logger.error(f"JSON decode error: {e}")
                     self.send_json_response({"success": False, "error": "Invalid JSON"}, status=400)
                     return
 
                 message = data.get("message", "")
+                logger.info(f"Processing message: '{message}'")
+                
                 # Process chat synchronously and return structured JSON
+                start_time = time.time()
                 response_payload = self.process_message(message)
+                processing_time = time.time() - start_time
+                
+                logger.info(f"Response payload: {response_payload}")
+                logger.info(f"Processing time: {processing_time:.2f}s")
+                
                 # Always return JSON with success flag
                 self.send_json_response(response_payload)
             else:
+                logger.warning(f"POST 404: {path}")
                 self.send_json_response({"success": False, "error": "Not found"}, status=404)
         except Exception as e:
-            print("POST handler exception:", e)
+            logger.error(f"POST handler exception: {e}")
             traceback.print_exc()
             self.send_json_response({"success": False, "error": str(e)}, status=500)
 
@@ -400,10 +463,19 @@ body{
 <script>
 /* Frontend logic: loader, stable removal, snackbar, fetch to /chat */
 
+function markdownToHtml(text) {
+  // Convert Markdown to HTML
+  return text
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')  // Bold text
+    .replace(/\*(.*?)\*/g, '<em>$1</em>')              // Italic text
+    .replace(/`(.*?)`/g, '<code>$1</code>')            // Inline code
+    .replace(/\n/g, '<br>');                           // Line breaks
+}
+
 function createMsgElement(text, cls) {
   const div = document.createElement('div');
   div.className = 'msg ' + cls;
-  div.innerHTML = text;
+  div.innerHTML = markdownToHtml(text);
   return div;
 }
 
@@ -536,23 +608,37 @@ window.addEventListener('load', function(){
 
     # Helpers for backend logic
     def safe_get_json(self, url, timeout=6):
+        logger.info(f"Making API request to: {url}")
         try:
             r = requests.get(url, timeout=timeout)
-            return r.json()
+            logger.info(f"API response status: {r.status_code}")
+            if r.status_code == 200:
+                data = r.json()
+                logger.info(f"API response data: {data}")
+                return data
+            else:
+                logger.warning(f"API request failed with status {r.status_code}: {r.text}")
+                return None
         except Exception as e:
-            print(f"safe_get_json error for {url}: {e}")
+            logger.error(f"safe_get_json error for {url}: {e}")
             return None
 
     def handle_gas_prices(self):
+        logger.info("Handling gas prices request")
         try:
             eth_url = "https://api.etherscan.io/api?module=gastracker&action=gasoracle"
             polygon_url = "https://gasstation.polygon.technology/v2"
             eth = self.safe_get_json(eth_url)
             polygon = self.safe_get_json(polygon_url)
 
+            logger.info(f"Ethereum API response: {eth}")
+            logger.info(f"Polygon API response: {polygon}")
+
             if not eth or not eth.get("result"):
+                logger.warning("Ethereum gas API unavailable, using fallback")
                 raise Exception("Ethereum gas API unavailable")
             if not polygon or not polygon.get("standard"):
+                logger.warning("Polygon gas API unavailable, using fallback")
                 # polygon may not be present - don't raise, fall back to estimates
                 polygon = None
 
@@ -573,15 +659,17 @@ window.addEventListener('load', function(){
             else:
                 result["polygon"] = {"slow":"-","average":"-","fast":"-"}
 
+            logger.info(f"Gas prices result: {result}")
             self.send_json_response({"success": True, "data": result})
         except Exception as e:
-            print("handle_gas_prices error:", e)
+            logger.error(f"handle_gas_prices error: {e}")
             traceback.print_exc()
             # fallback estimates
             fallback = {
                 "ethereum": {"slow":"20-30 Gwei","average":"30-50 Gwei","fast":"50-80 Gwei"},
                 "polygon": {"slow":"30-50 Gwei","average":"50-100 Gwei","fast":"100-200 Gwei"}
             }
+            logger.info(f"Using fallback gas prices: {fallback}")
             self.send_json_response({"success": True, "data": fallback})
 
     def handle_risk_assessment(self, query_string):
@@ -653,87 +741,72 @@ window.addEventListener('load', function(){
     # Main dispatcher for message => action
     def process_message(self, message):
         """Return a dict: {'success': bool, 'response': str, 'error': '...'}"""
+        logger.info(f"Processing message: '{message}'")
         try:
             if not message or not isinstance(message, str):
+                logger.warning("Empty or invalid message received")
                 return {"success": False, "error": "Empty message"}
 
-            text = message.strip().lower()
-
-            # gas-related intents
-            if any(w in text for w in ["gas", "fee", "fees", "cost", "price"]):
-                # call gas routine and build a friendly text response
-                eth_url = "https://api.etherscan.io/api?module=gastracker&action=gasoracle"
-                polygon_url = "https://gasstation.polygon.technology/v2"
-                eth = self.safe_get_json(eth_url)
-                polygon = self.safe_get_json(polygon_url)
-                if not eth or not eth.get("result"):
-                    # fallback
-                    resp = ("⛽ Current (estimated) Ethereum gas prices:\n"
-                            "Slow: 20-30 Gwei\nAverage: 30-50 Gwei\nFast: 50-80 Gwei\n\n"
-                            "Polygon: very low (approx 0.01-0.05 USD for simple swaps)\n\n"
-                            "Tip: use Polygon for cheap swaps and check gas before big txs.")
+            # Use OpenDeepSearch for all responses
+            if search_tool:
+                logger.info("Using OpenDeepSearch for response generation")
+                try:
+                    # Add DeFi context to the message for better responses
+                    enhanced_message = f"""
+                    You are a DeFi safety assistant with access to real-time web data. Please provide helpful, accurate information about:
+                    {message}
+                    
+                    IMPORTANT INSTRUCTIONS:
+                    - You have access to current web data, so provide real-time information when available
+                    - For gas prices: Look for current Ethereum and Polygon gas prices in Gwei, USD costs, and network congestion
+                    - For protocol risks: Provide specific risk factors, audit status, and safety recommendations
+                    - For DeFi analysis: Include cost estimates, risk assessments, and step-by-step guidance
+                    - Always include specific numbers, percentages, and actionable advice
+                    - If you find current data, present it clearly with context about what it means
+                    - Be practical and helpful for DeFi users making real decisions
+                    
+                    Focus on:
+                    - Current gas prices and transaction costs (Ethereum, Polygon, etc.)
+                    - Protocol risks and safety assessments (Aave, Uniswap, Compound, etc.)
+                    - DeFi action analysis and recommendations
+                    - Best practices for safe DeFi usage
+                    
+                    Be concise but informative. Include specific data when available from the web search results.
+                    """
+                    
+                    logger.info(f"Enhanced message: {enhanced_message[:200]}...")
+                    
+                    # Use OpenDeepSearch to get AI-powered response
+                    start_time = time.time()
+                    result = search_tool.forward(enhanced_message)
+                    processing_time = time.time() - start_time
+                    
+                    logger.info(f"OpenDeepSearch response: {str(result)[:200]}...")
+                    logger.info(f"OpenDeepSearch processing time: {processing_time:.2f}s")
+                    
+                    return {"success": True, "response": str(result)}
+                    
+                except Exception as e:
+                    logger.error(f"OpenDeepSearch error: {e}")
+                    traceback.print_exc()
+                    # Fallback to basic response
+                    return {"success": True, "response": f"I encountered an error processing your request: {message}. Please try rephrasing your question."}
+            else:
+                logger.warning("OpenDeepSearch not available, using fallback responses")
+                # Fallback responses when OpenDeepSearch is not available
+                text = message.strip().lower()
+                
+                if any(w in text for w in ["gas", "fee", "fees", "cost", "price"]):
+                    return {"success": True, "response": "⛽ Gas prices vary by network and time. Ethereum: ~$3-8, Polygon: ~$0.01-0.05. Check current prices before transactions."}
+                elif any(w in text for w in ["risk", "safe", "danger", "audit"]):
+                    return {"success": True, "response": "🔍 DeFi risks include smart contract vulnerabilities, liquidation risk, and impermanent loss. Always start small and use audited protocols."}
+                elif any(w in text for w in ["analyze", "analysis", "action", "staking", "stake", "swap"]):
+                    return {"success": True, "response": "📊 DeFi actions have varying costs and risks. Test on testnet first, start small, and monitor gas prices."}
                 else:
-                    eth_result = eth.get('result', {})
-                    if isinstance(eth_result, dict):
-                        resp = (f"⛽ Ethereum Gas (Gwei):\n"
-                                f"• Slow: {eth_result.get('SafeGasPrice','-')} Gwei\n"
-                                f"• Average: {eth_result.get('ProposeGasPrice','-')} Gwei\n"
-                                f"• Fast: {eth_result.get('FastGasPrice','-')} Gwei\n\n")
-                    else:
-                        resp = (f"⛽ Ethereum Gas (Gwei):\n"
-                                f"• Slow: - Gwei\n"
-                                f"• Average: - Gwei\n"
-                                f"• Fast: - Gwei\n\n")
-                    if polygon and polygon.get("standard"):
-                        resp += (f"Polygon (Gwei):\n"
-                                 f"• Slow: {polygon['standard'].get('maxFee','-')} Gwei\n"
-                                 f"• Average: {polygon['standard'].get('maxPriorityFee','-')} Gwei\n"
-                                 f"• Fast: {polygon.get('fast',{}).get('maxFee','-')} Gwei\n\n")
-                    resp += "Tip: schedule large transactions off-peak or use Polygon for cheap swaps."
-                return {"success": True, "response": resp}
-
-            # risk-related intents
-            if any(w in text for w in ["risk", "safe", "danger", "audit"]):
-                protocols = ["aave", "uniswap", "compound", "maker", "curve", "balancer"]
-                found = [p for p in protocols if p in text]
-                if found:
-                    proto = found[0]
-                    # reuse get_protocol_risks
-                    detail = self.get_protocol_risks(proto)
-                    return {"success": True, "response": detail}
-                else:
-                    # return general risk advice
-                    general_advice = (
-                        "🔍 General DeFi Risk Assessment\n\n"
-                        "Common risks: Smart contract vulnerabilities, liquidation risk, oracle manipulation, governance and market risk.\n\n"
-                        "Best practices: Start small, use audited protocols, diversify, monitor positions, and keep emergency funds separate."
-                    )
-                    return {"success": True, "response": general_advice}
-
-            # analysis intents
-            if any(w in text for w in ["analyze", "analysis", "action", "staking", "stake", "swap"]):
-                analysis = (
-                    "📊 DeFi Action Analysis\n\n"
-                    "Swapping tokens: Ethereum gas ~ $3-8 (varies). Polygon: <$0.1.\n"
-                    "Providing liquidity: Higher possibility of impermanent loss; costs vary.\n"
-                    "Lending/borrowing: Watch collateral ratios and liquidation thresholds.\n\n"
-                    "Recommendation: Test on testnet, start small, and check gas before transaction."
-                )
-                return {"success": True, "response": analysis}
-
-            # fallback/general response
-            general = (
-                f"🤖 I understand you're asking about: \"{message}\"\n\n"
-                "I can help with:\n"
-                "• Gas fees: ask 'What are current gas prices?'\n"
-                "• Risk assessment: ask 'Is Aave safe?'\n"
-                "• Action analysis: 'Analyze staking 100 USDC on Compound'\n\n"
-                "If you'd like protocol-specific risk info, mention the protocol name (e.g., Aave, Uniswap, Compound)."
-            )
-            return {"success": True, "response": general}
+                    return {"success": True, "response": f"I understand you're asking about: {message}. I can help with gas prices, risk assessments, and DeFi analysis."}
 
         except Exception as e:
-            print("process_message error:", e)
+            logger.error(f"process_message error: {e}")
             traceback.print_exc()
             return {"success": False, "error": "Internal processing error"}
 
@@ -771,562 +844,3 @@ if __name__ == "__main__":
     main()
 
 
-
-# #!/usr/bin/env python3
-# """
-# Working DeFi Assistant - Web Interface
-# This bypasses Gradio compatibility issues with Python 3.14
-# """
-
-# import os
-# import json
-# import requests
-# from http.server import HTTPServer, BaseHTTPRequestHandler
-# from urllib.parse import urlparse, parse_qs
-# from dotenv import load_dotenv
-# import threading
-# import time
-
-# # Load environment variables
-# load_dotenv()
-
-# class DeFiAssistantHandler(BaseHTTPRequestHandler):
-#     def __init__(self, *args, **kwargs):
-#         super().__init__(*args, **kwargs)
-    
-#     def do_GET(self):
-#         """Handle GET requests"""
-#         parsed_path = urlparse(self.path)
-        
-#         if parsed_path.path == '/':
-#             self.serve_html()
-#         elif parsed_path.path == '/gas':
-#             self.handle_gas_prices()
-#         elif parsed_path.path == '/risk':
-#             self.handle_risk_assessment(parsed_path.query)
-#         else:
-#             self.send_error(404)
-    
-#     def do_POST(self):
-#         """Handle POST requests"""
-#         if self.path == '/chat':
-#             content_length = int(self.headers['Content-Length'])
-#             post_data = self.rfile.read(content_length)
-#             try:
-#                 data = json.loads(post_data.decode('utf-8'))
-#                 message = data.get('message', '')
-#                 self.handle_chat(message)
-#             except json.JSONDecodeError:
-#                 self.send_error(400, "Invalid JSON")
-#         else:
-#             self.send_error(404)
-    
-#     def serve_html(self):
-#         """Serve the HTML interface"""
-#         html = """
-# <!DOCTYPE html>
-# <html>
-# <head>
-#     <meta charset="UTF-8">
-#     <title>Safe DeFi Assistant</title>
-#     <style>
-#         body { font-family: Arial, sans-serif; max-width: 1000px; margin: 0 auto; padding: 20px; background: #f5f5f5; }
-#         .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 10px; margin-bottom: 20px; }
-#         .chat-container { background: white; border-radius: 10px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-#         .message { margin: 10px 0; padding: 10px; border-radius: 5px; }
-#         .user-message { background: #e3f2fd; margin-left: 20px; }
-#         .bot-message { background: #f3e5f5; margin-right: 20px; }
-#         .input-container { display: flex; gap: 10px; margin-top: 20px; }
-#         .message-input { flex: 1; padding: 12px; font-size: 16px; border: 2px solid #ddd; border-radius: 5px; }
-#         .send-btn { padding: 12px 24px; font-size: 16px; background: #667eea; color: white; border: none; border-radius: 5px; cursor: pointer; }
-#         .send-btn:hover { background: #5a6fd8; }
-#         .quick-actions { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-bottom: 20px; }
-#         .quick-btn { padding: 15px; background: white; border: 2px solid #667eea; border-radius: 5px; cursor: pointer; text-align: center; transition: all 0.3s; }
-#         .quick-btn:hover { background: #667eea; color: white; }
-#         .loading { color: #666; font-style: italic; }
-#         .error { color: #d32f2f; background: #ffebee; padding: 10px; border-radius: 5px; }
-#         .success { color: #2e7d32; background: #e8f5e8; padding: 10px; border-radius: 5px; }
-#     </style>
-# </head>
-# <body>
-#     <div class="header">
-#         <h1>🛡️ Safe DeFi Assistant</h1>
-#         <p>Powered by OpenDeepSearch & AI - Get gas insights, risk assessments, and safe DeFi guidance</p>
-#     </div>
-    
-#     <div class="quick-actions">
-#         <div class="quick-btn" onclick="askQuestion('What are current gas prices?')">
-#             ⛽ Gas Prices
-#         </div>
-#         <div class="quick-btn" onclick="askQuestion('What are the risks of using Aave?')">
-#             🔍 Aave Risks
-#         </div>
-#         <div class="quick-btn" onclick="askQuestion('Is Uniswap safe to use?')">
-#             🦄 Uniswap Safety
-#         </div>
-#         <div class="quick-btn" onclick="askQuestion('Analyze staking 100 USDC on Compound')">
-#             📊 DeFi Analysis
-#         </div>
-#     </div>
-    
-#     <div class="chat-container">
-#         <div id="chat-messages"></div>
-#         <div class="input-container">
-#             <input type="text" id="message-input" class="message-input" placeholder="Ask about gas fees, protocol risks, or analyze DeFi actions..." onkeypress="handleKeyPress(event)">
-#             <button type="button" onclick="sendMessage()" class="send-btn">Send 📤</button>
-#         </div>
-#     </div>
-    
-#     <script>
-#         function addMessage(content, isUser = false) {
-#             const messagesDiv = document.getElementById('chat-messages');
-#             const messageDiv = document.createElement('div');
-#             messageDiv.className = 'message ' + (isUser ? 'user-message' : 'bot-message');
-#             messageDiv.innerHTML = content;
-#             messagesDiv.appendChild(messageDiv);
-#             messagesDiv.scrollTop = messagesDiv.scrollHeight;
-#         }
-        
-#         function askQuestion(question) {
-#             console.log('askQuestion called with:', question);
-#             document.getElementById('message-input').value = question;
-#             sendMessage();
-#         }
-        
-#         function handleKeyPress(event) {
-#             if (event.key === 'Enter') {
-#                 sendMessage();
-#             }
-#         }
-        
-#         function sendMessage() {
-#             const input = document.getElementById('message-input');
-#             const message = input.value.trim();
-            
-#             if (!message) {
-#                 console.log('No message to send');
-#                 return;
-#             }
-            
-#             console.log('Sending message:', message);
-#             addMessage(message, true);
-#             input.value = '';
-            
-#             addMessage('<div class="loading">🤔 Thinking...</div>');
-            
-#             fetch('/chat', {
-#                 method: 'POST',
-#                 headers: { 'Content-Type': 'application/json' },
-#                 body: JSON.stringify({ message: message })
-#             })
-#             .then(response => {
-#                 console.log('Response received:', response.status);
-#                 return response.json();
-#             })
-#             .then(data => {
-#                 console.log('Data received:', data);
-                
-#                 // Remove loading message
-#                 const messagesDiv = document.getElementById('chat-messages');
-#                 if (messagesDiv.lastChild) {
-#                     messagesDiv.removeChild(messagesDiv.lastChild);
-#                 }
-                
-#                 if (data.success) {
-#                     addMessage('<div class="success">' + data.response + '</div>');
-#                 } else {
-#                     addMessage('<div class="error">Error: ' + data.error + '</div>');
-#                 }
-#             })
-#             .catch(error => {
-#                 console.error('Fetch error:', error);
-                
-#                 // Remove loading message
-#                 const messagesDiv = document.getElementById('chat-messages');
-#                 if (messagesDiv.lastChild) {
-#                     messagesDiv.removeChild(messagesDiv.lastChild);
-#                 }
-                
-#                 addMessage('<div class="error">Network error: ' + error.message + '</div>');
-#             });
-#         }
-        
-#         // Add welcome message when page loads
-#         window.onload = function() {
-#             console.log('Page loaded, adding welcome message');
-#             addMessage('<div class="success">👋 Welcome! I\'m your Safe DeFi Assistant. Ask me about gas fees, protocol risks, or analyze DeFi actions. Try clicking one of the quick action buttons above!</div>');
-#         };
-#     </script>
-# </body>
-# </html>
-#         """
-        
-#         self.send_response(200)
-#         self.send_header('Content-type', 'text/html; charset=utf-8')
-#         self.end_headers()
-#         self.wfile.write(html.encode('utf-8'))
-    
-#     def handle_gas_prices(self):
-#         """Handle gas price requests"""
-#         try:
-#             # Ethereum gas prices
-#             eth_response = requests.get("https://api.etherscan.io/api?module=gastracker&action=gasoracle")
-#             eth_data = eth_response.json()
-            
-#             # Polygon gas prices
-#             polygon_response = requests.get("https://gasstation.polygon.technology/v2")
-#             polygon_data = polygon_response.json()
-            
-#             result = {
-#                 "ethereum": {
-#                     "slow": f"{eth_data['result']['SafeGasPrice']} Gwei",
-#                     "average": f"{eth_data['result']['ProposeGasPrice']} Gwei", 
-#                     "fast": f"{eth_data['result']['FastGasPrice']} Gwei",
-#                     "usd_estimate": "$2-8 for simple swaps"
-#                 },
-#                 "polygon": {
-#                     "slow": f"{polygon_data['standard']['maxFee']} Gwei",
-#                     "average": f"{polygon_data['standard']['maxPriorityFee']} Gwei",
-#                     "fast": f"{polygon_data['fast']['maxFee']} Gwei", 
-#                     "usd_estimate": "$0.01-0.05 for simple swaps"
-#                 }
-#             }
-            
-#             self.send_json_response({'success': True, 'data': result})
-            
-#         except Exception as e:
-#             self.send_json_response({'success': False, 'error': str(e)})
-    
-#     def handle_risk_assessment(self, query_string):
-#         """Handle risk assessment requests"""
-#         params = parse_qs(query_string)
-#         protocol = params.get('protocol', [''])[0]
-        
-#         risk_data = {
-#             "aave": {
-#                 "risks": [
-#                     "Smart Contract Risk: Code vulnerabilities could lead to fund loss",
-#                     "Liquidation Risk: Price volatility may trigger forced liquidations", 
-#                     "Oracle Risk: Price feed manipulation could affect positions",
-#                     "Interest Rate Risk: Fluctuating borrowing/lending rates"
-#                 ],
-#                 "best_practices": [
-#                     "Only invest what you can afford to lose",
-#                     "Monitor your health factor regularly (keep it above 2.0)",
-#                     "Use stop-loss strategies for large positions",
-#                     "Diversify across multiple protocols"
-#                 ],
-#                 "audit_status": "Multiple audits by reputable firms",
-#                 "tvl": "> $10B (as of 2024)"
-#             },
-#             "uniswap": {
-#                 "risks": [
-#                     "Impermanent Loss: Price divergence between paired assets",
-#                     "Smart Contract Risk: Potential vulnerabilities in V3 contracts",
-#                     "Front-running Risk: MEV bots may extract value", 
-#                     "Liquidity Provider Risk: Temporary loss of funds during provision"
-#                 ],
-#                 "best_practices": [
-#                     "Provide liquidity in correlated asset pairs (e.g., ETH/USDC)",
-#                     "Monitor pool fees and volume regularly",
-#                     "Use reputable front-ends only",
-#                     "Start with small amounts to understand impermanent loss"
-#                 ],
-#                 "audit_status": "Multiple audits, battle-tested over years",
-#                 "tvl": "> $3B (as of 2024)"
-#             },
-#             "compound": {
-#                 "risks": [
-#                     "Interest Rate Risk: Fluctuating borrowing/lending rates",
-#                     "Liquidation Risk: Collateral value dropping below threshold",
-#                     "Governance Risk: Protocol parameter changes via COMP tokens",
-#                     "Smart Contract Risk: Though extensively audited"
-#                 ],
-#                 "best_practices": [
-#                     "Maintain healthy collateral ratio (keep it conservative)",
-#                     "Diversify across multiple protocols", 
-#                     "Stay updated on governance proposals",
-#                     "Monitor your borrowing positions regularly"
-#                 ],
-#                 "audit_status": "Extensively audited, one of the original DeFi protocols",
-#                 "tvl": "> $2B (as of 2024)"
-#             }
-#         }
-        
-#         protocol_lower = protocol.lower()
-#         if protocol_lower in risk_data:
-#             self.send_json_response({'success': True, 'data': risk_data[protocol_lower]})
-#         else:
-#             self.send_json_response({'success': False, 'error': f'Unknown protocol: {protocol}'})
-    
-#     def handle_chat(self, message):
-#         """Handle general chat messages"""
-#         try:
-#             message_lower = message.lower()
-            
-#             # Route to appropriate handler based on message content
-#             if any(word in message_lower for word in ['gas', 'fee', 'cost', 'price']):
-#                 self.handle_gas_request()
-#             elif any(word in message_lower for word in ['risk', 'safe', 'danger', 'audit']):
-#                 self.handle_risk_request(message)
-#             elif any(word in message_lower for word in ['analyze', 'analysis', 'action']):
-#                 self.handle_analysis_request(message)
-#             else:
-#                 self.handle_general_request(message)
-                
-#         except Exception as e:
-#             self.send_json_response({'success': False, 'error': str(e)})
-    
-#     def handle_gas_request(self):
-#         """Handle gas-related requests"""
-#         try:
-#             # Get current gas prices
-#             eth_response = requests.get("https://api.etherscan.io/api?module=gastracker&action=gasoracle")
-#             eth_data = eth_response.json()
-            
-#             polygon_response = requests.get("https://gasstation.polygon.technology/v2")
-#             polygon_data = polygon_response.json()
-            
-#             # Check if API responses are valid
-#             if eth_data.get("status") != "1":
-#                 raise Exception("Ethereum API returned error")
-            
-#             response_text = f"""
-# ⛽ **Current Gas Prices**
-
-# **Ethereum Network:**
-# • Slow: {eth_data['result']['SafeGasPrice']} Gwei (~$2-4)
-# • Average: {eth_data['result']['ProposeGasPrice']} Gwei (~$3-6) 
-# • Fast: {eth_data['result']['FastGasPrice']} Gwei (~$5-8)
-
-# **Polygon Network:**
-# • Slow: {polygon_data['standard']['maxFee']} Gwei (~$0.01-0.02)
-# • Average: {polygon_data['standard']['maxPriorityFee']} Gwei (~$0.02-0.03)
-# • Fast: {polygon_data['fast']['maxFee']} Gwei (~$0.03-0.05)
-
-# 💡 **Tips:**
-# • Use Polygon for lower fees on simple transactions
-# • Monitor gas prices before large transactions
-# • Consider transaction timing (off-peak hours)
-#             """
-            
-#             self.send_json_response({'success': True, 'response': response_text})
-            
-#         except Exception as e:
-#             # Fallback response if APIs fail
-#             fallback_response = """
-# ⛽ **Gas Price Information**
-
-# **Ethereum Network (Estimated):**
-# • Slow: 20-30 Gwei (~$2-4)
-# • Average: 30-50 Gwei (~$3-6)
-# • Fast: 50-80 Gwei (~$5-8)
-
-# **Polygon Network (Estimated):**
-# • Slow: 30-50 Gwei (~$0.01-0.02)
-# • Average: 50-100 Gwei (~$0.02-0.03)
-# • Fast: 100-200 Gwei (~$0.03-0.05)
-
-# 💡 **Tips:**
-# • Use Polygon for lower fees on simple transactions
-# • Monitor gas prices before large transactions
-# • Consider transaction timing (off-peak hours)
-
-# ⚠️ *Note: Unable to fetch real-time data. Showing estimated ranges.*
-#             """
-#             self.send_json_response({'success': True, 'response': fallback_response})
-    
-#     def handle_risk_request(self, message):
-#         """Handle risk assessment requests"""
-#         # Extract protocol name from message
-#         protocols = ['aave', 'uniswap', 'compound', 'maker', 'curve', 'balancer']
-#         mentioned_protocols = [p for p in protocols if p in message.lower()]
-        
-#         if mentioned_protocols:
-#             protocol = mentioned_protocols[0]
-#             risk_data = self.get_protocol_risks(protocol)
-#             self.send_json_response({'success': True, 'response': risk_data})
-#         else:
-#             general_advice = """
-# 🔍 **General DeFi Risk Assessment**
-
-# **Common Risks Across All Protocols:**
-# • Smart Contract Risk: Code vulnerabilities
-# • Liquidation Risk: Forced position closures
-# • Oracle Risk: Price feed manipulation
-# • Governance Risk: Protocol parameter changes
-# • Market Risk: Asset price volatility
-
-# **Best Practices:**
-# • Start with small amounts
-# • Use only audited protocols
-# • Diversify across multiple protocols
-# • Monitor positions regularly
-# • Keep emergency funds separate
-# • Use hardware wallets for large amounts
-
-# **Recommended Protocols (Well-Audited):**
-# • Aave (Lending/Borrowing)
-# • Uniswap (DEX)
-# • Compound (Lending)
-# • MakerDAO (Stablecoins)
-#             """
-#             self.send_json_response({'success': True, 'response': general_advice})
-    
-#     def handle_analysis_request(self, message):
-#         """Handle DeFi action analysis requests"""
-#         analysis_text = """
-# 📊 **DeFi Action Analysis**
-
-# **Common DeFi Actions & Estimated Costs:**
-
-# **Swapping Tokens:**
-# • Ethereum: $3-8 gas fee
-# • Polygon: $0.02-0.1 gas fee
-# • Risk: Low (if using reputable DEX)
-
-# **Providing Liquidity:**
-# • Ethereum: $15-30 gas fee
-# • Polygon: $0.2-0.5 gas fee
-# • Risk: Medium (impermanent loss)
-
-# **Lending/Borrowing:**
-# • Ethereum: $8-25 gas fee
-# • Polygon: $0.1-0.4 gas fee
-# • Risk: Medium (liquidation risk)
-
-# **Staking:**
-# • Ethereum: $5-15 gas fee
-# • Polygon: $0.05-0.2 gas fee
-# • Risk: Low-Medium (protocol dependent)
-
-# **Recommendations:**
-# • Test on testnet first
-# • Start with small amounts
-# • Monitor gas fees before transactions
-# • Use reputable front-ends only
-# • Keep track of your positions
-#         """
-        
-#         self.send_json_response({'success': True, 'response': analysis_text})
-    
-#     def handle_general_request(self, message):
-#         """Handle general DeFi questions"""
-#         general_response = f"""
-# 🤖 **DeFi Assistant Response**
-
-# I understand you're asking about: "{message}"
-
-# Here's what I can help you with:
-
-# **⛽ Gas Fees:** Ask about current gas prices on Ethereum/Polygon
-# **🔍 Risk Assessment:** Ask about safety of specific protocols (Aave, Uniswap, Compound)
-# **📊 Action Analysis:** Ask me to analyze specific DeFi actions
-# **💡 General Advice:** Ask about DeFi best practices and safety tips
-
-# **Try asking:**
-# • "What are current gas prices?"
-# • "Is Aave safe to use?"
-# • "Analyze staking 100 USDC"
-# • "What are DeFi best practices?"
-
-# I'm here to help you navigate DeFi safely! 🛡️
-#         """
-        
-#         self.send_json_response({'success': True, 'response': general_response})
-    
-#     def get_protocol_risks(self, protocol):
-#         """Get risk information for a specific protocol"""
-#         risk_data = {
-#             "aave": """
-# 🛡️ **Aave Protocol Risk Assessment**
-
-# **Main Risks:**
-# • Smart Contract Risk: Code vulnerabilities could lead to fund loss
-# • Liquidation Risk: Price volatility may trigger forced liquidations
-# • Oracle Risk: Price feed manipulation could affect positions
-# • Interest Rate Risk: Fluctuating borrowing/lending rates
-
-# **Best Practices:**
-# • Only invest what you can afford to lose
-# • Monitor your health factor regularly (keep it above 2.0)
-# • Use stop-loss strategies for large positions
-# • Diversify across multiple protocols
-
-# **Audit Status:** Multiple audits by reputable firms
-# **TVL:** > $10B (as of 2024)
-# **Overall Risk Level:** Medium (well-established protocol)
-#             """,
-#             "uniswap": """
-# 🦄 **Uniswap Protocol Risk Assessment**
-
-# **Main Risks:**
-# • Impermanent Loss: Price divergence between paired assets
-# • Smart Contract Risk: Potential vulnerabilities in V3 contracts
-# • Front-running Risk: MEV bots may extract value
-# • Liquidity Provider Risk: Temporary loss of funds during provision
-
-# **Best Practices:**
-# • Provide liquidity in correlated asset pairs (e.g., ETH/USDC)
-# • Monitor pool fees and volume regularly
-# • Use reputable front-ends only
-# • Start with small amounts to understand impermanent loss
-
-# **Audit Status:** Multiple audits, battle-tested over years
-# **TVL:** > $3B (as of 2024)
-# **Overall Risk Level:** Medium (impermanent loss is main concern)
-#             """,
-#             "compound": """
-# 🏦 **Compound Protocol Risk Assessment**
-
-# **Main Risks:**
-# • Interest Rate Risk: Fluctuating borrowing/lending rates
-# • Liquidation Risk: Collateral value dropping below threshold
-# • Governance Risk: Protocol parameter changes via COMP tokens
-# • Smart Contract Risk: Though extensively audited
-
-# **Best Practices:**
-# • Maintain healthy collateral ratio (keep it conservative)
-# • Diversify across multiple protocols
-# • Stay updated on governance proposals
-# • Monitor your borrowing positions regularly
-
-# **Audit Status:** Extensively audited, one of the original DeFi protocols
-# **TVL:** > $2B (as of 2024)
-# **Overall Risk Level:** Low-Medium (very established protocol)
-#             """
-#         }
-        
-#         return risk_data.get(protocol, f"Protocol '{protocol}' not found in my database.")
-    
-#     def send_json_response(self, data):
-#         """Send JSON response"""
-#         self.send_response(200)
-#         self.send_header('Content-type', 'application/json; charset=utf-8')
-#         self.end_headers()
-#         self.wfile.write(json.dumps(data, ensure_ascii=False).encode('utf-8'))
-
-# def main():
-#     """Main function"""
-#     print("🚀 Starting Safe DeFi Assistant...")
-    
-#     # Check if we have the required API keys
-#     serper_key = os.getenv("SERPER_API_KEY")
-#     if not serper_key:
-#         print("⚠️  SERPER_API_KEY not found - some features may be limited")
-    
-#     # Create server
-#     port = 8080
-#     server = HTTPServer(('127.0.0.1', port), DeFiAssistantHandler)
-    
-#     print(f"🌐 DeFi Assistant running at: http://127.0.0.1:{port}")
-#     print("📝 Open your browser and start asking DeFi questions!")
-#     print("🛑 Press Ctrl+C to stop")
-    
-#     try:
-#         server.serve_forever()
-#     except KeyboardInterrupt:
-#         print("\n🛑 Server stopped by user")
-
-# if __name__ == "__main__":
-#     main()
