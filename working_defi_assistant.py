@@ -15,6 +15,9 @@ import traceback
 import time
 import logging
 from datetime import datetime
+import asyncio
+import aiohttp
+from typing import Dict, List, Optional
 
 load_dotenv()
 
@@ -65,6 +68,159 @@ if OpenDeepSearchTool:
         logger.error(f"Failed to initialize OpenDeepSearch tool: {e}")
         search_tool = None
 
+# Market Data Integration Classes
+class GasPriceMonitor:
+    """Real-time gas price monitoring with multiple sources"""
+    
+    def __init__(self):
+        self.sources = {
+            'etherscan': 'https://api.etherscan.io/api?module=gastracker&action=gasoracle&apikey={}',
+            'gasnow': 'https://www.gasnow.org/api/v3/gas/price',
+            'blocknative': 'https://api.blocknative.com/gasprices/blockprices'
+        }
+        self.etherscan_key = os.getenv("ETHERSCAN_API_KEY")
+    
+    def get_gas_prices(self) -> Dict:
+        """Get current gas prices from multiple sources"""
+        gas_data = {
+            'ethereum': {'slow': 0, 'standard': 0, 'fast': 0, 'instant': 0},
+            'polygon': {'slow': 0, 'standard': 0, 'fast': 0},
+            'arbitrum': {'slow': 0, 'standard': 0, 'fast': 0},
+            'last_updated': datetime.now().isoformat(),
+            'sources': []
+        }
+        
+        try:
+            # Ethereum gas prices from Etherscan
+            if self.etherscan_key:
+                url = self.sources['etherscan'].format(self.etherscan_key)
+                response = requests.get(url, timeout=5)
+                if response.status_code == 200:
+                    data = response.json()
+                    if data.get('status') == '1':
+                        result = data.get('result', {})
+                        gas_data['ethereum'] = {
+                            'slow': int(result.get('SafeGasPrice', 0)),
+                            'standard': int(result.get('ProposeGasPrice', 0)),
+                            'fast': int(result.get('FastGasPrice', 0)),
+                            'instant': int(result.get('FastGasPrice', 0)) * 1.2
+                        }
+                        gas_data['sources'].append('etherscan')
+            
+            # GasNow API (backup)
+            try:
+                response = requests.get(self.sources['gasnow'], timeout=5)
+                if response.status_code == 200:
+                    data = response.json()
+                    if data.get('code') == 200:
+                        prices = data.get('data', {})
+                        gas_data['ethereum'].update({
+                            'slow': prices.get('slow', 0) // 1000000000,  # Convert wei to gwei
+                            'standard': prices.get('standard', 0) // 1000000000,
+                            'fast': prices.get('fast', 0) // 1000000000,
+                            'instant': prices.get('rapid', 0) // 1000000000
+                        })
+                        if 'gasnow' not in gas_data['sources']:
+                            gas_data['sources'].append('gasnow')
+            except:
+                pass
+                
+        except Exception as e:
+            logger.error(f"Error fetching gas prices: {e}")
+        
+        return gas_data
+
+class DeFiTVLTracker:
+    """DeFi protocol TVL tracking and trends"""
+    
+    def __init__(self):
+        self.defillama_api = "https://api.llama.fi/protocols"
+        self.protocols = ['aave', 'compound', 'uniswap', 'curve', 'maker', 'convex']
+    
+    def get_protocol_tvl(self) -> Dict:
+        """Get TVL data for major DeFi protocols"""
+        tvl_data = {
+            'protocols': {},
+            'total_tvl': 0,
+            'last_updated': datetime.now().isoformat()
+        }
+        
+        try:
+            response = requests.get(self.defillama_api, timeout=10)
+            if response.status_code == 200:
+                data = response.json()
+                
+                for protocol in data:
+                    if protocol.get('name', '').lower() in self.protocols:
+                        protocol_name = protocol.get('name', '').lower()
+                        tvl_data['protocols'][protocol_name] = {
+                            'name': protocol.get('name', ''),
+                            'tvl': protocol.get('tvl', 0),
+                            'change_1d': protocol.get('change_1d', 0),
+                            'change_7d': protocol.get('change_7d', 0),
+                            'chains': protocol.get('chains', [])
+                        }
+                        tvl_data['total_tvl'] += protocol.get('tvl', 0)
+                        
+        except Exception as e:
+            logger.error(f"Error fetching TVL data: {e}")
+        
+        return tvl_data
+
+class YieldFarmingDetector:
+    """Yield farming opportunity detection"""
+    
+    def __init__(self):
+        self.apy_sources = {
+            'defillama': 'https://yields.llama.fi/pools',
+            'coindix': 'https://api.coindix.com/api/v1/pools'
+        }
+    
+    def get_yield_opportunities(self) -> Dict:
+        """Get current yield farming opportunities"""
+        yield_data = {
+            'opportunities': [],
+            'top_yields': [],
+            'last_updated': datetime.now().isoformat()
+        }
+        
+        try:
+            # DeFiLlama yields API
+            response = requests.get(self.apy_sources['defillama'], timeout=10)
+            if response.status_code == 200:
+                data = response.json()
+                
+                # Filter for high-yield opportunities
+                high_yield_pools = [
+                    pool for pool in data.get('data', [])
+                    if pool.get('apy', 0) > 10 and pool.get('tvlUsd', 0) > 1000000
+                ]
+                
+                # Sort by APY and take top 10
+                high_yield_pools.sort(key=lambda x: x.get('apy', 0), reverse=True)
+                
+                for pool in high_yield_pools[:10]:
+                    yield_data['opportunities'].append({
+                        'protocol': pool.get('project', ''),
+                        'chain': pool.get('chain', ''),
+                        'apy': round(pool.get('apy', 0), 2),
+                        'tvl': pool.get('tvlUsd', 0),
+                        'tokens': pool.get('symbol', ''),
+                        'pool': pool.get('pool', '')
+                    })
+                
+                yield_data['top_yields'] = yield_data['opportunities'][:5]
+                
+        except Exception as e:
+            logger.error(f"Error fetching yield opportunities: {e}")
+        
+        return yield_data
+
+# Initialize market data services
+gas_monitor = GasPriceMonitor()
+tvl_tracker = DeFiTVLTracker()
+yield_detector = YieldFarmingDetector()
+
 class DeFiAssistantHandler(BaseHTTPRequestHandler):
     # Helper to write JSON responses reliably
     def send_json_response(self, data, status=200):
@@ -107,6 +263,14 @@ class DeFiAssistantHandler(BaseHTTPRequestHandler):
                 self.handle_gas_prices()
             elif path == "/risk":
                 self.handle_risk_assessment(parsed.query)
+            elif path == "/market-data":
+                self.handle_market_data()
+            elif path == "/gas-prices":
+                self.handle_real_time_gas()
+            elif path == "/tvl-data":
+                self.handle_tvl_data()
+            elif path == "/yield-opportunities":
+                self.handle_yield_opportunities()
             else:
                 logger.warning(f"GET 404: {path}")
                 self.send_json_response({"success": False, "error": "Not found"}, status=404)
@@ -247,6 +411,54 @@ body{
 }
 .quick-btn:hover { transform:translateY(-4px); background: rgba(255,255,255,0.02) }
 .quick-btn .emoji { font-size:18px; width:36px; height:36px; display:flex; align-items:center; justify-content:center; }
+
+/* Market data widgets */
+.market-data {
+  margin-top:8px;
+  display:grid;
+  grid-template-columns:1fr;
+  gap:8px;
+}
+.market-widget {
+  background:var(--glass);
+  border-radius:8px;
+  padding:8px;
+  border:1px solid rgba(255,255,255,0.03);
+  transition:transform .12s ease, background .12s ease;
+}
+.market-widget:hover { background: rgba(255,255,255,0.02) }
+.widget-header {
+  display:flex;
+  align-items:center;
+  gap:6px;
+  margin-bottom:6px;
+  font-size:12px;
+}
+.widget-header .emoji { font-size:14px; }
+.refresh-btn {
+  margin-left:auto;
+  cursor:pointer;
+  opacity:0.6;
+  transition:opacity .2s ease;
+}
+.refresh-btn:hover { opacity:1; }
+.widget-content {
+  font-size:11px;
+  color:var(--muted);
+}
+.widget-content .loading {
+  text-align:center;
+  opacity:0.7;
+}
+.gas-item, .tvl-item, .yield-item {
+  display:flex;
+  justify-content:space-between;
+  margin-bottom:2px;
+}
+.gas-item .value, .tvl-item .value, .yield-item .value {
+  font-weight:600;
+  color:var(--text);
+}
 
 /* Right column - chat */
 .right {
@@ -434,6 +646,44 @@ body{
         </div>
       </div>
 
+      <div style="height:16px"></div>
+
+      <div style="font-weight:700; color:var(--muted); font-size:13px">Live Market Data</div>
+      <div class="market-data" id="market-data">
+        <div class="market-widget" id="gas-widget">
+          <div class="widget-header">
+            <div class="emoji">⛽</div>
+            <div style="font-weight:700">Gas Prices</div>
+            <div class="refresh-btn" onclick="refreshGasPrices()">🔄</div>
+          </div>
+          <div class="widget-content" id="gas-content">
+            <div class="loading">Loading...</div>
+          </div>
+        </div>
+
+        <div class="market-widget" id="tvl-widget">
+          <div class="widget-header">
+            <div class="emoji">📈</div>
+            <div style="font-weight:700">DeFi TVL</div>
+            <div class="refresh-btn" onclick="refreshTVLData()">🔄</div>
+          </div>
+          <div class="widget-content" id="tvl-content">
+            <div class="loading">Loading...</div>
+          </div>
+        </div>
+
+        <div class="market-widget" id="yield-widget">
+          <div class="widget-header">
+            <div class="emoji">🌾</div>
+            <div style="font-weight:700">Top Yields</div>
+            <div class="refresh-btn" onclick="refreshYieldData()">🔄</div>
+          </div>
+          <div class="widget-content" id="yield-content">
+            <div class="loading">Loading...</div>
+          </div>
+        </div>
+      </div>
+
       <div style="flex:1"></div>
 
       <div style="font-size:13px; color:var(--muted);">
@@ -593,9 +843,96 @@ function nl2br(str) {
   return str.replace(/\n/g, "<br>");
 }
 
-// add welcome on load
-window.addEventListener('load', function(){
+// Market data functions
+async function fetchMarketData(endpoint) {
+  try {
+    const response = await fetch(endpoint);
+    const data = await response.json();
+    return data.success ? data.data : null;
+  } catch (error) {
+    console.error('Error fetching market data:', error);
+    return null;
+  }
+}
+
+function updateGasPrices(data) {
+  const container = document.getElementById('gas-content');
+  if (!data) {
+    container.innerHTML = '<div class="loading">Failed to load</div>';
+    return;
+  }
+  
+  const eth = data.ethereum;
+  let html = '<div class="gas-item"><span>Ethereum Slow</span><span class="value">' + eth.slow + ' Gwei</span></div>';
+  html += '<div class="gas-item"><span>Ethereum Standard</span><span class="value">' + eth.standard + ' Gwei</span></div>';
+  html += '<div class="gas-item"><span>Ethereum Fast</span><span class="value">' + eth.fast + ' Gwei</span></div>';
+  html += '<div class="gas-item"><span>Ethereum Instant</span><span class="value">' + Math.round(eth.instant) + ' Gwei</span></div>';
+  
+  container.innerHTML = html;
+}
+
+function updateTVLData(data) {
+  const container = document.getElementById('tvl-content');
+  if (!data || !data.protocols) {
+    container.innerHTML = '<div class="loading">Failed to load</div>';
+    return;
+  }
+  
+  let html = '';
+  const protocols = Object.values(data.protocols).slice(0, 4);
+  protocols.forEach(protocol => {
+    const change = protocol.change_1d > 0 ? '+' : '';
+    html += `<div class="tvl-item"><span>${protocol.name}</span><span class="value">$${(protocol.tvl/1e9).toFixed(1)}B ${change}${protocol.change_1d.toFixed(1)}%</span></div>`;
+  });
+  
+  container.innerHTML = html;
+}
+
+function updateYieldData(data) {
+  const container = document.getElementById('yield-content');
+  if (!data || !data.top_yields) {
+    container.innerHTML = '<div class="loading">Failed to load</div>';
+    return;
+  }
+  
+  let html = '';
+  data.top_yields.slice(0, 3).forEach(yield => {
+    html += `<div class="yield-item"><span>${yield.protocol}</span><span class="value">${yield.apy}% APY</span></div>`;
+  });
+  
+  container.innerHTML = html;
+}
+
+async function refreshGasPrices() {
+  const data = await fetchMarketData('/gas-prices');
+  updateGasPrices(data);
+}
+
+async function refreshTVLData() {
+  const data = await fetchMarketData('/tvl-data');
+  updateTVLData(data);
+}
+
+async function refreshYieldData() {
+  const data = await fetchMarketData('/yield-opportunities');
+  updateYieldData(data);
+}
+
+// Auto-refresh market data every 30 seconds
+setInterval(async () => {
+  await refreshGasPrices();
+  await refreshTVLData();
+  await refreshYieldData();
+}, 30000);
+
+// Initial load
+window.addEventListener('load', async function(){
   appendMessage('<div style="font-weight:700">👋 Welcome!</div><div style="margin-top:8px" class="small">I\'m your Safe DeFi Assistant. Try the quick actions or ask a question like "What are current gas prices?"</div>', 'bot');
+  
+  // Load initial market data
+  await refreshGasPrices();
+  await refreshTVLData();
+  await refreshYieldData();
 });
 </script>
 </body>
@@ -737,6 +1074,57 @@ window.addEventListener('load', function(){
                 "message": "Provide a protocol using ?protocol=aave (or uniswap, compound) to get specific risk details."
             }
             self.send_json_response({"success": True, "data": general})
+
+    def handle_market_data(self):
+        """Get comprehensive market data"""
+        logger.info("Handling market data request")
+        try:
+            # Get all market data
+            gas_data = gas_monitor.get_gas_prices()
+            tvl_data = tvl_tracker.get_protocol_tvl()
+            yield_data = yield_detector.get_yield_opportunities()
+            
+            market_data = {
+                "gas_prices": gas_data,
+                "tvl_data": tvl_data,
+                "yield_opportunities": yield_data,
+                "timestamp": datetime.now().isoformat()
+            }
+            
+            self.send_json_response({"success": True, "data": market_data})
+        except Exception as e:
+            logger.error(f"handle_market_data error: {e}")
+            self.send_json_response({"success": False, "error": str(e)})
+
+    def handle_real_time_gas(self):
+        """Get real-time gas prices"""
+        logger.info("Handling real-time gas prices request")
+        try:
+            gas_data = gas_monitor.get_gas_prices()
+            self.send_json_response({"success": True, "data": gas_data})
+        except Exception as e:
+            logger.error(f"handle_real_time_gas error: {e}")
+            self.send_json_response({"success": False, "error": str(e)})
+
+    def handle_tvl_data(self):
+        """Get DeFi protocol TVL data"""
+        logger.info("Handling TVL data request")
+        try:
+            tvl_data = tvl_tracker.get_protocol_tvl()
+            self.send_json_response({"success": True, "data": tvl_data})
+        except Exception as e:
+            logger.error(f"handle_tvl_data error: {e}")
+            self.send_json_response({"success": False, "error": str(e)})
+
+    def handle_yield_opportunities(self):
+        """Get yield farming opportunities"""
+        logger.info("Handling yield opportunities request")
+        try:
+            yield_data = yield_detector.get_yield_opportunities()
+            self.send_json_response({"success": True, "data": yield_data})
+        except Exception as e:
+            logger.error(f"handle_yield_opportunities error: {e}")
+            self.send_json_response({"success": False, "error": str(e)})
 
     # Main dispatcher for message => action
     def process_message(self, message):
