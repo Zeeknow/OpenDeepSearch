@@ -1,0 +1,9 @@
+# Copy this content to your .env file
+# Replace the placeholder values with your actual API keys
+
+SERPER_API_KEY=your_serper_api_key_here
+OPENROUTER_API_KEY=your_openrouter_api_key_here
+JINA_API_KEY=your_jina_api_key_here
+LITELLM_API_KEY=your_litellm_api_key_here
+LITELLM_MODEL_ID=openrouter/google/gemini-2.0-flash-001
+ETHERSCAN_API_KEY=your_etherscan_api_key_here
