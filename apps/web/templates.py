@@ -228,12 +228,13 @@ def get_landing_page():
         </div>
       </a>
       <div class="nav-links">
-        <a href="/" class="nav-link active">Home</a>
-        <a href="/chat" class="nav-link">AI Assistant</a>
-        <a href="/gas-prices" class="nav-link">Gas Prices</a>
-        <a href="/market-data" class="nav-link">Market Data</a>
-        <a href="/risk-analysis" class="nav-link">Risk Analysis</a>
-        <a href="/yield-farming" class="nav-link">Yield Farming</a>
+            <a href="/" class="nav-link active">Home</a>
+            <a href="/chat" class="nav-link">AI Assistant</a>
+            <a href="/gas-prices" class="nav-link">Gas Prices</a>
+            <a href="/market-data" class="nav-link">Market Data</a>
+            <a href="/risk-analysis" class="nav-link">Risk Analysis</a>
+            <a href="/portfolio" class="nav-link">Portfolio</a>
+            <a href="/yield-farming" class="nav-link">Yield Farming</a>
       </div>
     </nav>
 
@@ -291,11 +292,11 @@ def get_landing_page():
         </div>
       </a>
       
-      <a href="#" class="feature-card" onclick="showComingSoon('Portfolio Analysis')">
+      <a href="/portfolio" class="feature-card">
         <div class="feature-icon">📊</div>
         <div class="feature-title">Portfolio Analysis</div>
         <div class="feature-desc">
-          Analyze your DeFi portfolio performance, risks, and optimization opportunities (Coming Soon).
+          Analyze your DeFi portfolio performance, risks, and optimization opportunities.
         </div>
       </a>
     </div>
@@ -366,12 +367,13 @@ def get_gas_prices_page():
         </div>
       </a>
       <div class="nav-links">
-        <a href="/" class="nav-link">Home</a>
-        <a href="/chat" class="nav-link">AI Assistant</a>
-        <a href="/gas-prices" class="nav-link active">Gas Prices</a>
-        <a href="/market-data" class="nav-link">Market Data</a>
-        <a href="/risk-analysis" class="nav-link">Risk Analysis</a>
-        <a href="/yield-farming" class="nav-link">Yield Farming</a>
+            <a href="/" class="nav-link">Home</a>
+            <a href="/chat" class="nav-link">AI Assistant</a>
+            <a href="/gas-prices" class="nav-link active">Gas Prices</a>
+            <a href="/market-data" class="nav-link">Market Data</a>
+            <a href="/risk-analysis" class="nav-link">Risk Analysis</a>
+            <a href="/portfolio" class="nav-link">Portfolio</a>
+            <a href="/yield-farming" class="nav-link">Yield Farming</a>
       </div>
     </nav>
 
@@ -488,12 +490,13 @@ def get_market_data_page():
         </div>
       </a>
       <div class="nav-links">
-        <a href="/" class="nav-link">Home</a>
-        <a href="/chat" class="nav-link">AI Assistant</a>
-        <a href="/gas-prices" class="nav-link">Gas Prices</a>
-        <a href="/market-data" class="nav-link active">Market Data</a>
-        <a href="/risk-analysis" class="nav-link">Risk Analysis</a>
-        <a href="/yield-farming" class="nav-link">Yield Farming</a>
+            <a href="/" class="nav-link">Home</a>
+            <a href="/chat" class="nav-link">AI Assistant</a>
+            <a href="/gas-prices" class="nav-link">Gas Prices</a>
+            <a href="/market-data" class="nav-link active">Market Data</a>
+            <a href="/risk-analysis" class="nav-link">Risk Analysis</a>
+            <a href="/portfolio" class="nav-link">Portfolio</a>
+            <a href="/yield-farming" class="nav-link">Yield Farming</a>
       </div>
     </nav>
 
@@ -725,12 +728,13 @@ def get_chat_page():
         </div>
       </a>
       <div class="nav-links">
-        <a href="/" class="nav-link">Home</a>
-        <a href="/chat" class="nav-link active">AI Assistant</a>
-        <a href="/gas-prices" class="nav-link">Gas Prices</a>
-        <a href="/market-data" class="nav-link">Market Data</a>
-        <a href="/risk-analysis" class="nav-link">Risk Analysis</a>
-        <a href="/yield-farming" class="nav-link">Yield Farming</a>
+            <a href="/" class="nav-link">Home</a>
+            <a href="/chat" class="nav-link active">AI Assistant</a>
+            <a href="/gas-prices" class="nav-link">Gas Prices</a>
+            <a href="/market-data" class="nav-link">Market Data</a>
+            <a href="/risk-analysis" class="nav-link">Risk Analysis</a>
+            <a href="/portfolio" class="nav-link">Portfolio</a>
+            <a href="/yield-farming" class="nav-link">Yield Farming</a>
       </div>
     </nav>
 
@@ -856,3 +860,482 @@ def get_chat_page():
 </body>
 </html>
 """
+
+def get_portfolio_page():
+    return f"""
+    <!doctype html>
+    <html lang="en">
+    <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Portfolio Analysis - Safe DeFi Assistant</title>
+    <style>{get_base_css()}
+    .portfolio-container {{
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }}
+    .wallet-input {{
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }}
+    .wallet-input input {{
+      width: 100%;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 14px;
+    }}
+    .wallet-input button {{
+      margin-top: 10px;
+      width: 100%;
+    }}
+    .analysis-result {{
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      margin-top: 20px;
+      display: none;
+    }}
+    .risk-score {{
+      display: inline-block;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-weight: 700;
+      font-size: 18px;
+    }}
+    .risk-low {{ background: #10b981; color: white; }}
+    .risk-medium {{ background: #f59e0b; color: white; }}
+    .risk-high {{ background: #ef4444; color: white; }}
+    .positions-grid {{
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 15px;
+      margin: 20px 0;
+    }}
+    .position-card {{
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 15px;
+    }}
+    .position-header {{
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }}
+    .protocol-name {{
+      font-weight: 700;
+      color: var(--primary);
+    }}
+    .position-value {{
+      font-weight: 700;
+      color: var(--text);
+    }}
+    .risk-factors, .recommendations {{
+      margin: 15px 0;
+    }}
+    .risk-factors ul, .recommendations ul {{
+      margin: 10px 0;
+      padding-left: 20px;
+    }}
+    .risk-factors li, .recommendations li {{
+      margin: 5px 0;
+      color: var(--text-secondary);
+    }}
+    </style>
+    </head>
+    <body>
+      <div class="container">
+        <nav class="navbar">
+          <a href="/" class="logo">
+            <div class="logo-icon">DF</div>
+            <div>
+              <div style="font-size:20px;font-weight:700">Safe DeFi Assistant</div>
+              <div style="font-size:12px;color:var(--muted)">Portfolio Analysis</div>
+            </div>
+          </a>
+          <div class="nav-links">
+            <a href="/" class="nav-link">Home</a>
+            <a href="/chat" class="nav-link">AI Assistant</a>
+            <a href="/gas-prices" class="nav-link">Gas Prices</a>
+            <a href="/market-data" class="nav-link">Market Data</a>
+            <a href="/risk-analysis" class="nav-link">Risk Analysis</a>
+            <a href="/portfolio" class="nav-link active">Portfolio</a>
+            <a href="/yield-farming" class="nav-link">Yield Farming</a>
+          </div>
+        </nav>
+        
+        <div class="portfolio-container">
+          <div class="page-header">
+            <h1>📊 Portfolio Risk Analysis</h1>
+            <p>Analyze your DeFi portfolio for risks and get personalized recommendations</p>
+          </div>
+          
+          <div class="wallet-input">
+            <h3>Enter Wallet Address</h3>
+            <input type="text" id="walletInput" placeholder="0x1234567890123456789012345678901234567890" />
+            <button class="btn-primary" onclick="analyzePortfolio()">Analyze Portfolio</button>
+          </div>
+          
+          <div id="loadingIndicator" style="display: none; text-align: center; padding: 40px;">
+            <div style="font-size: 18px;">🔍 Analyzing portfolio...</div>
+            <div style="color: var(--muted); margin-top: 10px;">This may take a few moments</div>
+          </div>
+          
+          <div id="analysisResult" class="analysis-result">
+            <div class="analysis-header">
+              <h2>📈 Portfolio Analysis Results</h2>
+              <div id="riskScore" class="risk-score"></div>
+            </div>
+            
+            <div class="portfolio-summary">
+              <h3>💰 Portfolio Summary</h3>
+              <div id="portfolioSummary"></div>
+            </div>
+            
+            <div class="positions-section">
+              <h3>📋 Positions</h3>
+              <div id="positionsGrid" class="positions-grid"></div>
+            </div>
+            
+            <div class="risk-factors">
+              <h3>⚠️ Risk Factors</h3>
+              <ul id="riskFactorsList"></ul>
+            </div>
+            
+            <div class="recommendations">
+              <h3>💡 Recommendations</h3>
+              <ul id="recommendationsList"></ul>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <script>
+        async function analyzePortfolio() {{
+          const walletInput = document.getElementById('walletInput');
+          const walletAddress = walletInput.value.trim();
+          
+          if (!walletAddress) {{
+            showSnackbar('Please enter a wallet address', 'error');
+            return;
+          }}
+          
+          if (!walletAddress.startsWith('0x') || walletAddress.length !== 42) {{
+            showSnackbar('Please enter a valid Ethereum address', 'error');
+            return;
+          }}
+          
+          // Show loading indicator
+          document.getElementById('loadingIndicator').style.display = 'block';
+          document.getElementById('analysisResult').style.display = 'none';
+          
+          try {{
+            const response = await fetch(`/api/portfolio/analyze?wallet=${{walletAddress}}`);
+            const data = await response.json();
+            
+            if (data.success) {{
+              displayAnalysisResults(data.data);
+            }} else {{
+              showSnackbar('Analysis failed: ' + data.error, 'error');
+            }}
+          }} catch (error) {{
+            showSnackbar('Error analyzing portfolio: ' + error.message, 'error');
+          }} finally {{
+            document.getElementById('loadingIndicator').style.display = 'none';
+          }}
+        }}
+        
+        function displayAnalysisResults(data) {{
+          // Show results
+          document.getElementById('analysisResult').style.display = 'block';
+          
+          // Risk score
+          const riskScore = document.getElementById('riskScore');
+          const score = data.risk_score;
+          riskScore.textContent = `Risk Score: ${{score}}/10`;
+          riskScore.className = 'risk-score ' + (score <= 3 ? 'risk-low' : score <= 7 ? 'risk-medium' : 'risk-high');
+          
+          // Portfolio summary
+          document.getElementById('portfolioSummary').innerHTML = `
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin: 15px 0;">
+              <div style="background: var(--bg); padding: 15px; border-radius: 8px; text-align: center;">
+                <div style="font-size: 24px; font-weight: 700; color: var(--primary);">$${{data.total_value.toLocaleString()}}</div>
+                <div style="color: var(--muted);">Total Value</div>
+              </div>
+              <div style="background: var(--bg); padding: 15px; border-radius: 8px; text-align: center;">
+                <div style="font-size: 24px; font-weight: 700; color: var(--primary);">${{data.positions.length}}</div>
+                <div style="color: var(--muted);">Positions</div>
+              </div>
+              <div style="background: var(--bg); padding: 15px; border-radius: 8px; text-align: center;">
+                <div style="font-size: 24px; font-weight: 700; color: var(--primary);">${{data.liquidation_risks.length}}</div>
+                <div style="color: var(--muted);">Liquidation Risks</div>
+              </div>
+            </div>
+          `;
+          
+          // Positions
+          const positionsGrid = document.getElementById('positionsGrid');
+          positionsGrid.innerHTML = data.positions.map(pos => `
+            <div class="position-card">
+              <div class="position-header">
+                <div class="protocol-name">${{pos.protocol}}</div>
+                <div class="position-value">$${{pos.value_usd}}</div>
+              </div>
+              <div style="color: var(--text-secondary); margin-bottom: 10px;">${{pos.token}}</div>
+              <div style="color: var(--text-secondary); font-size: 14px;">${{pos.amount}}</div>
+              ${{pos.health_factor ? `<div style="margin-top: 10px; padding: 4px 8px; background: var(--bg); border-radius: 4px; font-size: 12px;">Health Factor: ${{pos.health_factor}}</div>` : ''}}
+            </div>
+          `).join('');
+          
+          // Risk factors
+          const riskFactorsList = document.getElementById('riskFactorsList');
+          riskFactorsList.innerHTML = data.risk_factors.map(factor => `<li>${{factor}}</li>`).join('');
+          
+          // Recommendations
+          const recommendationsList = document.getElementById('recommendationsList');
+          recommendationsList.innerHTML = data.recommendations.map(rec => `<li>${{rec}}</li>`).join('');
+        }}
+        
+        function showSnackbar(message, type = 'info') {{
+          const snackbar = document.createElement('div');
+          snackbar.className = `snackbar snackbar-${{type}}`;
+          snackbar.textContent = message;
+          document.body.appendChild(snackbar);
+          
+          setTimeout(() => {{
+            snackbar.classList.add('show');
+          }}, 100);
+          
+          setTimeout(() => {{
+            snackbar.classList.remove('show');
+            setTimeout(() => document.body.removeChild(snackbar), 300);
+          }}, 3000);
+        }}
+      </script>
+    </body>
+    </html>
+    """
+
+def get_risk_analysis_page():
+    return f"""
+    <!doctype html>
+    <html lang="en">
+    <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Risk Analysis - Safe DeFi Assistant</title>
+    <style>{get_base_css()}</style>
+    </head>
+    <body>
+      <div class="container">
+        <nav class="navbar">
+          <a href="/" class="logo">
+            <div class="logo-icon">DF</div>
+            <div>
+              <div style="font-size:20px;font-weight:700">Safe DeFi Assistant</div>
+              <div style="font-size:12px;color:var(--muted)">Risk Analysis</div>
+            </div>
+          </a>
+          <div class="nav-links">
+            <a href="/" class="nav-link">Home</a>
+            <a href="/chat" class="nav-link">AI Assistant</a>
+            <a href="/gas-prices" class="nav-link">Gas Prices</a>
+            <a href="/market-data" class="nav-link">Market Data</a>
+            <a href="/risk-analysis" class="nav-link active">Risk Analysis</a>
+            <a href="/portfolio" class="nav-link">Portfolio</a>
+            <a href="/yield-farming" class="nav-link">Yield Farming</a>
+          </div>
+        </nav>
+        
+        <div class="page-header">
+          <h1>⚠️ Risk Analysis</h1>
+          <p>Comprehensive DeFi risk assessment and protocol safety analysis</p>
+        </div>
+        
+        <div class="card">
+          <h2>🚧 Coming Soon</h2>
+          <p>Our advanced risk analysis feature is currently under development. This will include:</p>
+          <ul>
+            <li>Smart contract security audits</li>
+            <li>Protocol risk scoring</li>
+            <li>Liquidation risk analysis</li>
+            <li>Market volatility assessment</li>
+            <li>Cross-protocol risk comparison</li>
+            <li>Real-time risk alerts</li>
+          </ul>
+          <p>In the meantime, you can use our <a href="/chat">AI Assistant</a> to get personalized risk assessments!</p>
+        </div>
+      </div>
+      
+      <script>
+        function showSnackbar(message, type = 'info') {{
+          const snackbar = document.createElement('div');
+          snackbar.className = `snackbar snackbar-${{type}}`;
+          snackbar.textContent = message;
+          document.body.appendChild(snackbar);
+          
+          setTimeout(() => {{
+            snackbar.classList.add('show');
+          }}, 100);
+          
+          setTimeout(() => {{
+            snackbar.classList.remove('show');
+            setTimeout(() => document.body.removeChild(snackbar), 300);
+          }}, 3000);
+        }}
+      </script>
+    </body>
+    </html>
+    """
+
+def get_yield_farming_page():
+    return f"""
+    <!doctype html>
+    <html lang="en">
+    <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Yield Farming - Safe DeFi Assistant</title>
+    <style>{get_base_css()}</style>
+    </head>
+    <body>
+      <div class="container">
+        <nav class="navbar">
+          <a href="/" class="logo">
+            <div class="logo-icon">DF</div>
+            <div>
+              <div style="font-size:20px;font-weight:700">Safe DeFi Assistant</div>
+              <div style="font-size:12px;color:var(--muted)">Yield Farming</div>
+            </div>
+          </a>
+          <div class="nav-links">
+            <a href="/" class="nav-link">Home</a>
+            <a href="/chat" class="nav-link">AI Assistant</a>
+            <a href="/gas-prices" class="nav-link">Gas Prices</a>
+            <a href="/market-data" class="nav-link">Market Data</a>
+            <a href="/risk-analysis" class="nav-link">Risk Analysis</a>
+            <a href="/portfolio" class="nav-link">Portfolio</a>
+            <a href="/yield-farming" class="nav-link active">Yield Farming</a>
+          </div>
+        </nav>
+        
+        <div class="page-header">
+          <h1>🌾 Yield Farming Opportunities</h1>
+          <p>Discover high-yield farming opportunities with risk-adjusted returns and safety recommendations</p>
+        </div>
+        
+        <div class="card">
+          <h2>🚧 Coming Soon</h2>
+          <p>Our yield farming analysis feature is currently under development. This will include:</p>
+          <ul>
+            <li>Real-time yield opportunity detection</li>
+            <li>Risk-adjusted return calculations</li>
+            <li>Protocol safety assessments</li>
+            <li>Impermanent loss analysis</li>
+            <li>Automated yield optimization suggestions</li>
+          </ul>
+          <p>In the meantime, you can use our <a href="/chat">AI Assistant</a> to get personalized yield farming advice!</p>
+        </div>
+      </div>
+      
+      <script>
+        function showSnackbar(message, type = 'info') {{
+          const snackbar = document.createElement('div');
+          snackbar.className = `snackbar snackbar-${{type}}`;
+          snackbar.textContent = message;
+          document.body.appendChild(snackbar);
+          
+          setTimeout(() => {{
+            snackbar.classList.add('show');
+          }}, 100);
+          
+          setTimeout(() => {{
+            snackbar.classList.remove('show');
+            setTimeout(() => document.body.removeChild(snackbar), 300);
+          }}, 3000);
+        }}
+      </script>
+    </body>
+    </html>
+    """
+
+def get_risk_analysis_page():
+    return f"""
+    <!doctype html>
+    <html lang="en">
+    <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Risk Analysis - Safe DeFi Assistant</title>
+    <style>{get_base_css()}</style>
+    </head>
+    <body>
+      <div class="container">
+        <nav class="navbar">
+          <a href="/" class="logo">
+            <div class="logo-icon">DF</div>
+            <div>
+              <div style="font-size:20px;font-weight:700">Safe DeFi Assistant</div>
+              <div style="font-size:12px;color:var(--muted)">Risk Analysis</div>
+            </div>
+          </a>
+          <div class="nav-links">
+            <a href="/" class="nav-link">Home</a>
+            <a href="/chat" class="nav-link">AI Assistant</a>
+            <a href="/gas-prices" class="nav-link">Gas Prices</a>
+            <a href="/market-data" class="nav-link">Market Data</a>
+            <a href="/risk-analysis" class="nav-link active">Risk Analysis</a>
+            <a href="/portfolio" class="nav-link">Portfolio</a>
+            <a href="/yield-farming" class="nav-link">Yield Farming</a>
+          </div>
+        </nav>
+        
+        <div class="page-header">
+          <h1>⚠️ Risk Analysis</h1>
+          <p>Comprehensive DeFi risk assessment and protocol safety analysis</p>
+        </div>
+        
+        <div class="card">
+          <h2>🚧 Coming Soon</h2>
+          <p>Our advanced risk analysis feature is currently under development. This will include:</p>
+          <ul>
+            <li>Smart contract security audits</li>
+            <li>Protocol risk scoring</li>
+            <li>Liquidation risk analysis</li>
+            <li>Market volatility assessment</li>
+            <li>Cross-protocol risk comparison</li>
+            <li>Real-time risk alerts</li>
+          </ul>
+          <p>In the meantime, you can use our <a href="/chat">AI Assistant</a> to get personalized risk assessments!</p>
+        </div>
+      </div>
+      
+      <script>
+        function showSnackbar(message, type = 'info') {{
+          const snackbar = document.createElement('div');
+          snackbar.className = `snackbar snackbar-${{type}}`;
+          snackbar.textContent = message;
+          document.body.appendChild(snackbar);
+          
+          setTimeout(() => {{
+            snackbar.classList.add('show');
+          }}, 100);
+          
+          setTimeout(() => {{
+            snackbar.classList.remove('show');
+            setTimeout(() => document.body.removeChild(snackbar), 300);
+          }}, 3000);
+        }}
+      </script>
+    </body>
+    </html>
+    """

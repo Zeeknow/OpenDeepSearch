@@ -9,25 +9,24 @@ import json
 import requests
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from urllib.parse import urlparse, parse_qs
-from dotenv import load_dotenv
 import traceback
 import time
 import logging
 from datetime import datetime
 
-# Import our modules
-from market_data import gas_monitor, tvl_tracker, yield_detector
-from templates import get_landing_page, get_gas_prices_page, get_market_data_page, get_chat_page
-
-load_dotenv()
+# Import our modules with new structure
+from core.services.market_data import gas_monitor, tvl_tracker, yield_detector
+from apps.web.templates import get_landing_page, get_gas_prices_page, get_market_data_page, get_chat_page, get_portfolio_page, get_yield_farming_page, get_risk_analysis_page
+from apps.api.sentient_adapter import SentientDeFiAgent
+from core.services.portfolio_analyzer import portfolio_analyzer
+from core.services.mev_protection import mev_protection
+from infrastructure.config.settings import config
+from infrastructure.logging.logger import logger
 
 # Import OpenDeepSearch
 try:
     from opendeepsearch.ods_tool import OpenDeepSearchTool
-    logger = logging.getLogger(__name__)
-    logger.info("OpenDeepSearch imported successfully")
 except ImportError as e:
-    logger = logging.getLogger(__name__)
     logger.error(f"Failed to import OpenDeepSearch: {e}")
     OpenDeepSearchTool = None
 
@@ -47,10 +46,10 @@ search_tool = None
 if OpenDeepSearchTool:
     try:
         search_tool = OpenDeepSearchTool(
-            model_name="openrouter/google/gemini-2.0-flash-001",
+            model_name=config.LITELLM_MODEL_ID,
             reranker="jina",
             search_provider="serper",
-            serper_api_key=os.getenv("SERPER_API_KEY")
+            serper_api_key=config.SERPER_API_KEY
         )
         if not search_tool.is_initialized:
             search_tool.setup()
@@ -58,6 +57,14 @@ if OpenDeepSearchTool:
     except Exception as e:
         logger.error(f"Failed to initialize OpenDeepSearch tool: {e}")
         search_tool = None
+
+# Initialize Sentient Agent
+try:
+    sentient_agent = SentientDeFiAgent()
+    logger.info("Sentient DeFi Agent initialized successfully")
+except Exception as e:
+    logger.error(f"Failed to initialize Sentient agent: {e}")
+    sentient_agent = None
 
 class DeFiAssistantHandler(BaseHTTPRequestHandler):
     """Main HTTP request handler for the DeFi Assistant"""
@@ -120,6 +127,8 @@ class DeFiAssistantHandler(BaseHTTPRequestHandler):
                 self.serve_risk_analysis_page()
             elif path == "/yield-farming":
                 self.serve_yield_farming_page()
+            elif path == "/portfolio":
+                self.serve_portfolio_page()
             # API endpoints
             elif path == "/api/gas-prices":
                 self.handle_gas_prices_api()
@@ -129,6 +138,16 @@ class DeFiAssistantHandler(BaseHTTPRequestHandler):
                 self.handle_tvl_data_api()
             elif path == "/api/yield-opportunities":
                 self.handle_yield_opportunities_api()
+            # Sentient API endpoints
+            elif path == "/api/sentient/info":
+                self.handle_sentient_info_api()
+            # Portfolio and MEV protection endpoints
+            elif path == "/api/portfolio/analyze":
+                self.handle_portfolio_analysis_api()
+            elif path == "/api/mev/status":
+                self.handle_mev_status_api()
+            elif path == "/api/mev/alerts":
+                self.handle_mev_alerts_api()
             else:
                 logger.warning(f"GET 404: {path}")
                 self.send_json_response({"success": False, "error": "Not found"}, status=404)
@@ -146,6 +165,12 @@ class DeFiAssistantHandler(BaseHTTPRequestHandler):
         try:
             if path == "/api/chat" or path == "/chat":
                 self.handle_chat_api()
+            elif path == "/api/sentient/query":
+                self.handle_sentient_query_api()
+            elif path == "/api/portfolio/analyze":
+                self.handle_portfolio_analysis_post_api()
+            elif path == "/api/mev/check":
+                self.handle_mev_check_api()
             else:
                 logger.warning(f"POST 404: {path}")
                 self.send_json_response({"success": False, "error": "Not found"}, status=404)
@@ -307,141 +332,27 @@ body{
 </body>
 </html>
 """
-        self.send_html_response(html)
+        html = get_risk_analysis_page()
+        self.send_response(200)
+        self.send_header("Content-type", "text/html; charset=utf-8")
+        self.end_headers()
+        self.wfile.write(html.encode("utf-8"))
 
     def serve_yield_farming_page(self):
-        """Serve the yield farming page (placeholder)"""
-        html = """
-<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Yield Farming - Safe DeFi Assistant</title>
-<style>
-:root{
-  --bg:#0f1724;
-  --card:#0b1220;
-  --accent:#7c5cff;
-  --accent-2:#3ec6ff;
-  --muted:#9aa4b2;
-  --glass: rgba(255,255,255,0.04);
-  --text:#e6eef8;
-}
-*{box-sizing:border-box}
-body{
-  margin:0;
-  background: linear-gradient(180deg, #071022 0%, #081126 60%);
-  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-  color:var(--text);
-  min-height:100vh;
-}
-.container{
-  width:100%;
-  max-width:1200px;
-  margin:0 auto;
-  padding:20px;
-}
-.navbar{
-  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-  border-radius:12px;
-  padding:16px 24px;
-  margin-bottom:24px;
-  border:1px solid rgba(255,255,255,0.03);
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-}
-.logo{
-  display:flex;
-  align-items:center;
-  gap:12px;
-  text-decoration:none;
-  color:inherit;
-}
-.logo-icon{
-  width:40px;
-  height:40px;
-  border-radius:10px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  background: linear-gradient(135deg,var(--accent), var(--accent-2));
-  font-weight:700;
-  box-shadow: 0 6px 18px rgba(124,92,255,0.18);
-}
-.nav-links{
-  display:flex;
-  gap:20px;
-  align-items:center;
-}
-.nav-link{
-  color:var(--muted);
-  text-decoration:none;
-  padding:8px 16px;
-  border-radius:8px;
-  transition:all 0.2s ease;
-}
-.nav-link:hover{
-  color:var(--text);
-  background:rgba(255,255,255,0.05);
-}
-.nav-link.active{
-  color:var(--accent);
-  background:rgba(124,92,255,0.1);
-}
-.card{
-  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-  border-radius:12px;
-  padding:24px;
-  border:1px solid rgba(255,255,255,0.03);
-  margin-bottom:20px;
-  text-align:center;
-}
-</style>
-</head>
-<body>
-  <div class="container">
-    <nav class="navbar">
-      <a href="/" class="logo">
-        <div class="logo-icon">DF</div>
-        <div>
-          <div style="font-size:20px;font-weight:700">Safe DeFi Assistant</div>
-          <div style="font-size:12px;color:var(--muted)">Yield Farming</div>
-        </div>
-      </a>
-      <div class="nav-links">
-        <a href="/" class="nav-link">Home</a>
-        <a href="/gas-prices" class="nav-link">Gas Prices</a>
-        <a href="/market-data" class="nav-link">Market Data</a>
-        <a href="/risk-analysis" class="nav-link">Risk Analysis</a>
-        <a href="/yield-farming" class="nav-link active">Yield Farming</a>
-        <a href="/chat" class="nav-link">AI Assistant</a>
-      </div>
-    </nav>
+        """Serve the yield farming page"""
+        html = get_yield_farming_page()
+        self.send_response(200)
+        self.send_header("Content-type", "text/html; charset=utf-8")
+        self.end_headers()
+        self.wfile.write(html.encode("utf-8"))
 
-    <div class="card">
-      <h1>🌾 Yield Farming</h1>
-      <p>Advanced yield farming analysis coming soon!</p>
-      <p>Check out our market data page for current yield opportunities.</p>
-      <a href="/market-data" style="color:var(--accent);text-decoration:none">→ View Market Data</a>
-    </div>
-    
-    <div class="card" style="background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.2);">
-      <h2 style="color:var(--warning);margin-top:0">🚧 Coming Soon Features</h2>
-      <ul>
-        <li>Advanced yield optimization algorithms</li>
-        <li>Risk-adjusted yield scoring</li>
-        <li>Automated yield farming strategies</li>
-        <li>Cross-chain yield comparison</li>
-        <li>Yield farming alerts and notifications</li>
-      </ul>
-    </div>
-  </div>
-</body>
-</html>
-"""
-        self.send_html_response(html)
+    def serve_portfolio_page(self):
+        """Serve the portfolio analysis page"""
+        html = get_portfolio_page()
+        self.send_response(200)
+        self.send_header("Content-type", "text/html; charset=utf-8")
+        self.end_headers()
+        self.wfile.write(html.encode("utf-8"))
 
     # API handlers
     def handle_gas_prices_api(self):
@@ -596,10 +507,200 @@ body{
             traceback.print_exc()
             return {"success": False, "error": "Internal processing error"}
 
+    def handle_sentient_info_api(self):
+        """Handle Sentient agent info requests"""
+        try:
+            if sentient_agent:
+                agent_info = sentient_agent.get_agent_info()
+                self.send_json_response(agent_info)
+            else:
+                self.send_json_response({
+                    "success": False, 
+                    "error": "Sentient agent not initialized"
+                }, status=500)
+        except Exception as e:
+            logger.error(f"Sentient info API error: {e}")
+            self.send_json_response({
+                "success": False, 
+                "error": "Failed to get agent info"
+            }, status=500)
+
+    def handle_sentient_query_api(self):
+        """Handle Sentient query requests"""
+        try:
+            content_length = int(self.headers['Content-Length'])
+            post_data = self.rfile.read(content_length)
+            data = json.loads(post_data.decode('utf-8'))
+            
+            logger.info(f"Sentient query request: {data}")
+            
+            query = data.get('query', '')
+            context = data.get('context', {})
+            
+            if not query:
+                self.send_json_response({
+                    "success": False,
+                    "error": "Query parameter is required"
+                }, status=400)
+                return
+            
+            if sentient_agent:
+                # Process query asynchronously
+                import asyncio
+                loop = asyncio.new_event_loop()
+                asyncio.set_event_loop(loop)
+                response = loop.run_until_complete(
+                    sentient_agent.process_query(query, context)
+                )
+                loop.close()
+                
+                self.send_json_response(response)
+            else:
+                self.send_json_response({
+                    "success": False,
+                    "error": "Sentient agent not initialized"
+                }, status=500)
+                
+        except json.JSONDecodeError:
+            self.send_json_response({
+                "success": False,
+                "error": "Invalid JSON in request body"
+            }, status=400)
+        except Exception as e:
+            logger.error(f"Sentient query API error: {e}")
+            traceback.print_exc()
+            self.send_json_response({
+                "success": False,
+                "error": "Failed to process query"
+            }, status=500)
+
+    def handle_portfolio_analysis_api(self):
+        """Handle GET portfolio analysis requests"""
+        try:
+            # Get wallet address from query parameters
+            parsed = urlparse(self.path)
+            query_params = parse_qs(parsed.query)
+            wallet_address = query_params.get('wallet', [None])[0]
+            
+            if not wallet_address:
+                self.send_json_response({
+                    "success": False,
+                    "error": "Wallet address parameter is required"
+                }, status=400)
+                return
+            
+            # Analyze portfolio
+            result = portfolio_analyzer.analyze_portfolio(wallet_address)
+            self.send_json_response(result)
+            
+        except Exception as e:
+            logger.error(f"Portfolio analysis API error: {e}")
+            self.send_json_response({
+                "success": False,
+                "error": "Failed to analyze portfolio"
+            }, status=500)
+
+    def handle_portfolio_analysis_post_api(self):
+        """Handle POST portfolio analysis requests"""
+        try:
+            content_length = int(self.headers['Content-Length'])
+            post_data = self.rfile.read(content_length)
+            data = json.loads(post_data.decode('utf-8'))
+            
+            wallet_address = data.get('wallet_address')
+            if not wallet_address:
+                self.send_json_response({
+                    "success": False,
+                    "error": "wallet_address is required"
+                }, status=400)
+                return
+            
+            # Analyze portfolio
+            result = portfolio_analyzer.analyze_portfolio(wallet_address)
+            self.send_json_response(result)
+            
+        except json.JSONDecodeError:
+            self.send_json_response({
+                "success": False,
+                "error": "Invalid JSON in request body"
+            }, status=400)
+        except Exception as e:
+            logger.error(f"Portfolio analysis POST API error: {e}")
+            self.send_json_response({
+                "success": False,
+                "error": "Failed to analyze portfolio"
+            }, status=500)
+
+    def handle_mev_status_api(self):
+        """Handle MEV protection status requests"""
+        try:
+            result = mev_protection.get_mev_protection_status()
+            self.send_json_response(result)
+        except Exception as e:
+            logger.error(f"MEV status API error: {e}")
+            self.send_json_response({
+                "success": False,
+                "error": "Failed to get MEV protection status"
+            }, status=500)
+
+    def handle_mev_alerts_api(self):
+        """Handle MEV alerts requests"""
+        try:
+            parsed = urlparse(self.path)
+            query_params = parse_qs(parsed.query)
+            wallet_address = query_params.get('wallet', [None])[0]
+            
+            if not wallet_address:
+                self.send_json_response({
+                    "success": False,
+                    "error": "Wallet address parameter is required"
+                }, status=400)
+                return
+            
+            result = mev_protection.get_sandwich_attack_alerts(wallet_address)
+            self.send_json_response(result)
+            
+        except Exception as e:
+            logger.error(f"MEV alerts API error: {e}")
+            self.send_json_response({
+                "success": False,
+                "error": "Failed to get MEV alerts"
+            }, status=500)
+
+    def handle_mev_check_api(self):
+        """Handle MEV risk check requests"""
+        try:
+            content_length = int(self.headers['Content-Length'])
+            post_data = self.rfile.read(content_length)
+            data = json.loads(post_data.decode('utf-8'))
+            
+            transaction_data = data.get('transaction_data', {})
+            if not transaction_data:
+                self.send_json_response({
+                    "success": False,
+                    "error": "transaction_data is required"
+                }, status=400)
+                return
+            
+            result = mev_protection.check_mev_risk(transaction_data)
+            self.send_json_response(result)
+            
+        except json.JSONDecodeError:
+            self.send_json_response({
+                "success": False,
+                "error": "Invalid JSON in request body"
+            }, status=400)
+        except Exception as e:
+            logger.error(f"MEV check API error: {e}")
+            self.send_json_response({
+                "success": False,
+                "error": "Failed to check MEV risk"
+            }, status=500)
+
 def main():
     """Main function to start the server"""
-    port = int(os.getenv("PORT", 8080))
-    host = "127.0.0.1"
+    port = config.PORT
+    host = config.HOST
     server = HTTPServer((host, port), DeFiAssistantHandler)
     print("🚀 Safe DeFi Assistant running at: http://{}:{}".format(host, port))
     print("📱 Features available:")
@@ -607,6 +708,13 @@ def main():
     print("   • Gas prices: http://{}:{}/gas-prices".format(host, port))
     print("   • Market data: http://{}:{}/market-data".format(host, port))
     print("   • AI chat: http://{}:{}/chat".format(host, port))
+    print("🤖 Sentient API endpoints:")
+    print("   • Agent info: http://{}:{}/api/sentient/info".format(host, port))
+    print("   • Query endpoint: http://{}:{}/api/sentient/query".format(host, port))
+    print("📊 Advanced Features:")
+    print("   • Portfolio analysis: http://{}:{}/api/portfolio/analyze".format(host, port))
+    print("   • MEV protection: http://{}:{}/api/mev/status".format(host, port))
+    print("   • MEV alerts: http://{}:{}/api/mev/alerts".format(host, port))
     try:
         server.serve_forever()
     except KeyboardInterrupt:

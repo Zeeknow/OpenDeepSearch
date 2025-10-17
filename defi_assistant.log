@@ -538,3 +538,482 @@ LiteLLM completion() model= google/gemini-2.0-flash-001; provider = openrouter
 2025-10-17 01:04:10,637 - INFO - Handling market data API request
 2025-10-17 01:04:40,650 - INFO - GET request: /api/market-data - Query: 
 2025-10-17 01:04:40,651 - INFO - Handling market data API request
+2025-10-17 01:58:46,837 - INFO - OpenDeepSearch tool initialized successfully
+2025-10-17 01:58:46,838 - INFO - Sentient DeFi Agent initialized successfully
+2025-10-17 01:59:24,999 - INFO - GET request: / - Query: 
+2025-10-17 01:59:37,130 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 01:59:37,132 - INFO - Handling market data API request
+2025-10-17 01:59:59,094 - INFO - GET request: /market-data - Query: 
+2025-10-17 01:59:59,231 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 01:59:59,232 - INFO - Handling market data API request
+2025-10-17 02:00:12,155 - INFO - GET request: /api/sentient/info - Query: 
+2025-10-17 02:00:13,489 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 02:00:13,490 - INFO - Handling market data API request
+2025-10-17 02:00:40,987 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 02:00:40,991 - INFO - Handling market data API request
+2025-10-17 02:01:10,965 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 02:01:10,966 - INFO - Handling market data API request
+2025-10-17 02:01:24,368 - ERROR - Error fetching yield opportunities: HTTPSConnectionPool(host='yields.llama.fi', port=443): Read timed out.
+2025-10-17 02:02:11,978 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 02:02:11,980 - INFO - Handling market data API request
+2025-10-17 02:02:25,732 - ERROR - Error fetching yield opportunities: HTTPSConnectionPool(host='yields.llama.fi', port=443): Read timed out.
+2025-10-17 02:02:28,891 - INFO - GET request: /api/portfolio/analyze - Query: wallet=0x1234567890123456789012345678901234567890
+2025-10-17 02:02:28,891 - INFO - Analyzing portfolio for wallet: 0x12345678...
+2025-10-17 02:02:37,451 - INFO - GET request: /risk-analysis - Query: 
+2025-10-17 02:02:39,643 - INFO - GET request: /yield-farming - Query: 
+2025-10-17 02:02:41,089 - INFO - GET request: / - Query: 
+2025-10-17 02:02:43,930 - INFO - GET request: /market-data - Query: 
+2025-10-17 02:02:44,045 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 02:02:44,045 - INFO - Handling market data API request
+2025-10-17 02:02:59,218 - ERROR - Error fetching yield opportunities: HTTPSConnectionPool(host='yields.llama.fi', port=443): Read timed out.
+2025-10-17 02:02:59,220 - INFO - GET request: / - Query: 
+2025-10-17 02:02:59,221 - INFO - GET request: / - Query: 
+2025-10-17 02:02:59,221 - INFO - GET request: / - Query: 
+2025-10-17 02:02:59,222 - INFO - GET request: / - Query: 
+2025-10-17 02:02:59,406 - INFO - GET request: / - Query: 
+2025-10-17 02:03:04,671 - INFO - GET request: /chat - Query: 
+2025-10-17 02:03:04,804 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 02:03:04,804 - INFO - Handling market data API request
+2025-10-17 02:03:18,633 - ERROR - Error fetching yield opportunities: HTTPSConnectionPool(host='yields.llama.fi', port=443): Read timed out.
+2025-10-17 02:03:18,636 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 02:03:18,636 - INFO - Handling market data API request
+2025-10-17 02:03:32,576 - ERROR - Error fetching yield opportunities: HTTPSConnectionPool(host='yields.llama.fi', port=443): Read timed out.
+2025-10-17 02:03:34,962 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 02:03:34,962 - INFO - Handling market data API request
+2025-10-17 02:04:04,966 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 02:04:04,968 - INFO - Handling market data API request
+2025-10-17 02:04:13,964 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 02:04:13,965 - INFO - Handling market data API request
+2025-10-17 02:04:34,969 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 02:04:34,970 - INFO - Handling market data API request
+2025-10-17 02:05:04,964 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 02:05:04,966 - INFO - Handling market data API request
+2025-10-17 02:05:14,964 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 02:05:14,964 - INFO - Handling market data API request
+2025-10-17 02:05:28,844 - ERROR - Error fetching yield opportunities: HTTPSConnectionPool(host='yields.llama.fi', port=443): Read timed out.
+2025-10-17 02:05:34,976 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 02:05:34,977 - INFO - Handling market data API request
+2025-10-17 02:06:05,039 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 02:06:05,041 - INFO - Handling market data API request
+2025-10-17 02:06:15,966 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 02:06:15,967 - INFO - Handling market data API request
+2025-10-17 02:06:29,349 - ERROR - Error fetching yield opportunities: HTTPSConnectionPool(host='yields.llama.fi', port=443): Read timed out.
+2025-10-17 02:06:41,747 - INFO - GET request: /api/sentient/info - Query: 
+2025-10-17 02:06:41,749 - INFO - POST request: /api/sentient/query
+2025-10-17 02:06:41,749 - INFO - Sentient query request: {'query': 'What are current gas prices?', 'context': {}}
+2025-10-17 02:06:41,751 - INFO - Processing Sentient query: What are current gas prices?
+2025-10-17 02:06:43,619 - INFO - GET request: /api/portfolio/analyze - Query: wallet=0x1234567890123456789012345678901234567890
+2025-10-17 02:06:43,620 - INFO - Analyzing portfolio for wallet: 0x12345678...
+2025-10-17 02:06:43,621 - INFO - POST request: /api/portfolio/analyze
+2025-10-17 02:06:43,621 - INFO - Analyzing portfolio for wallet: 0x12345678...
+2025-10-17 02:06:43,622 - INFO - GET request: /api/mev/status - Query: 
+2025-10-17 02:06:43,623 - INFO - GET request: /api/mev/alerts - Query: wallet=0x1234567890123456789012345678901234567890
+2025-10-17 02:06:43,625 - INFO - POST request: /api/mev/check
+2025-10-17 02:06:43,625 - INFO - Checking MEV risk for transaction
+2025-10-17 02:06:48,316 - INFO - GET request: /api/portfolio/analyze - Query: wallet=0x1234567890123456789012345678901234567890
+2025-10-17 02:06:48,317 - INFO - Analyzing portfolio for wallet: 0x12345678...
+2025-10-17 02:06:52,490 - INFO - GET request: /api/mev/status - Query: 
+2025-10-17 02:07:16,995 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 02:07:16,997 - INFO - Handling market data API request
+2025-10-17 02:08:17,966 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 02:08:17,968 - INFO - Handling market data API request
+2025-10-17 02:09:18,967 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 02:09:18,968 - INFO - Handling market data API request
+2025-10-17 02:09:51,223 - INFO - OpenDeepSearch tool initialized successfully
+2025-10-17 02:09:51,245 - INFO - Sentient DeFi Agent initialized successfully
+2025-10-17 02:09:58,329 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 02:09:58,330 - INFO - Handling market data API request
+2025-10-17 02:10:11,485 - ERROR - Error fetching yield opportunities: HTTPSConnectionPool(host='yields.llama.fi', port=443): Read timed out.
+2025-10-17 02:10:11,499 - INFO - GET request: / - Query: 
+2025-10-17 02:10:11,504 - INFO - GET request: / - Query: 
+2025-10-17 02:10:11,505 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 02:10:11,505 - INFO - Handling market data API request
+2025-10-17 02:10:24,807 - ERROR - Error fetching yield opportunities: HTTPSConnectionPool(host='yields.llama.fi', port=443): Read timed out.
+2025-10-17 02:10:24,811 - INFO - GET request: /portfolio - Query: 
+2025-10-17 02:10:24,814 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 02:10:24,815 - INFO - Handling market data API request
+2025-10-17 02:10:38,113 - ERROR - Error fetching yield opportunities: HTTPSConnectionPool(host='yields.llama.fi', port=443): Read timed out.
+2025-10-17 02:10:48,111 - INFO - GET request: /api/portfolio/analyze - Query: wallet=0x1234567890123456789012345678901234567890
+2025-10-17 02:10:48,112 - INFO - Analyzing portfolio for wallet: 0x12345678...
+2025-10-17 02:11:20,957 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 02:11:20,957 - INFO - Handling market data API request
+2025-10-17 02:12:21,952 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 02:12:21,954 - INFO - Handling market data API request
+2025-10-17 02:13:22,962 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 02:13:22,966 - INFO - Handling market data API request
+2025-10-17 02:14:23,981 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 02:14:23,983 - INFO - Handling market data API request
+2025-10-17 02:15:24,950 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 02:15:24,950 - INFO - Handling market data API request
+2025-10-17 02:15:38,143 - ERROR - Error fetching yield opportunities: HTTPSConnectionPool(host='yields.llama.fi', port=443): Read timed out.
+2025-10-17 02:16:25,970 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 02:16:25,972 - INFO - Handling market data API request
+2025-10-17 02:16:40,561 - ERROR - Error fetching yield opportunities: HTTPSConnectionPool(host='yields.llama.fi', port=443): Read timed out.
+2025-10-17 02:16:40,953 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 02:16:40,953 - INFO - Handling market data API request
+2025-10-17 02:16:54,222 - ERROR - Error fetching yield opportunities: HTTPSConnectionPool(host='yields.llama.fi', port=443): Read timed out.
+2025-10-17 02:17:10,953 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 02:17:10,954 - INFO - Handling market data API request
+2025-10-17 02:18:11,951 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 02:18:11,952 - INFO - Handling market data API request
+2025-10-17 02:18:25,212 - ERROR - Error fetching yield opportunities: HTTPSConnectionPool(host='yields.llama.fi', port=443): Read timed out.
+2025-10-17 02:19:12,953 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 02:19:12,955 - INFO - Handling market data API request
+2025-10-17 02:20:13,953 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 02:20:13,954 - INFO - Handling market data API request
+2025-10-17 02:21:14,999 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 02:21:15,002 - INFO - Handling market data API request
+2025-10-17 02:22:15,949 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 02:22:15,951 - INFO - Handling market data API request
+2025-10-17 02:23:16,951 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 02:23:16,953 - INFO - Handling market data API request
+2025-10-17 02:23:30,106 - ERROR - Error fetching yield opportunities: HTTPSConnectionPool(host='yields.llama.fi', port=443): Read timed out.
+2025-10-17 02:24:17,866 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 02:24:17,867 - INFO - Handling market data API request
+2025-10-17 02:25:18,870 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 02:25:18,871 - INFO - Handling market data API request
+2025-10-17 02:25:32,038 - ERROR - Error fetching yield opportunities: HTTPSConnectionPool(host='yields.llama.fi', port=443): Read timed out.
+2025-10-17 02:26:19,873 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 02:26:19,874 - INFO - Handling market data API request
+2025-10-17 02:26:33,112 - ERROR - Error fetching yield opportunities: HTTPSConnectionPool(host='yields.llama.fi', port=443): Read timed out.
+2025-10-17 02:27:21,076 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 02:27:21,077 - INFO - Handling market data API request
+2025-10-17 02:28:21,876 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 02:28:21,879 - INFO - Handling market data API request
+2025-10-17 02:28:35,181 - ERROR - Error fetching yield opportunities: HTTPSConnectionPool(host='yields.llama.fi', port=443): Read timed out.
+2025-10-17 02:29:22,876 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 02:29:22,878 - INFO - Handling market data API request
+2025-10-17 02:29:36,355 - ERROR - Error fetching yield opportunities: HTTPSConnectionPool(host='yields.llama.fi', port=443): Read timed out.
+2025-10-17 02:30:23,867 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 02:30:23,869 - INFO - Handling market data API request
+2025-10-17 02:30:37,438 - ERROR - Error fetching yield opportunities: HTTPSConnectionPool(host='yields.llama.fi', port=443): Read timed out.
+2025-10-17 02:31:24,867 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 02:31:24,869 - INFO - Handling market data API request
+2025-10-17 02:31:38,161 - ERROR - Error fetching yield opportunities: HTTPSConnectionPool(host='yields.llama.fi', port=443): Read timed out.
+2025-10-17 02:32:25,870 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 02:32:25,872 - INFO - Handling market data API request
+2025-10-17 02:33:26,868 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 02:33:26,876 - INFO - Handling market data API request
+2025-10-17 02:34:27,891 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 02:34:27,892 - INFO - Handling market data API request
+2025-10-17 02:34:41,260 - ERROR - Error fetching yield opportunities: HTTPSConnectionPool(host='yields.llama.fi', port=443): Read timed out.
+2025-10-17 02:35:28,865 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 02:35:28,866 - INFO - Handling market data API request
+2025-10-17 02:35:41,775 - ERROR - Error fetching yield opportunities: HTTPSConnectionPool(host='yields.llama.fi', port=443): Read timed out.
+2025-10-17 02:36:29,876 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 02:36:29,879 - INFO - Handling market data API request
+2025-10-17 02:37:30,868 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 02:37:30,870 - INFO - Handling market data API request
+2025-10-17 02:37:50,552 - INFO - OpenDeepSearch tool initialized successfully
+2025-10-17 02:37:50,552 - INFO - Sentient DeFi Agent initialized successfully
+2025-10-17 02:37:58,914 - INFO - GET request: /api/portfolio/analyze - Query: wallet=0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045
+2025-10-17 02:37:58,914 - INFO - Analyzing portfolio for wallet: 0xd8dA6BF2...
+2025-10-17 02:37:58,915 - ERROR - Moralis API error: name 'os' is not defined
+2025-10-17 02:37:58,915 - INFO - Using simulated data for wallet: 0xd8dA6BF2...
+2025-10-17 02:38:08,044 - INFO - GET request: /api/portfolio/analyze - Query: wallet=0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b6
+2025-10-17 02:38:08,046 - INFO - Analyzing portfolio for wallet: 0x742d35Cc...
+2025-10-17 02:38:08,046 - ERROR - Moralis API error: name 'os' is not defined
+2025-10-17 02:38:08,046 - INFO - Using simulated data for wallet: 0x742d35Cc...
+2025-10-17 02:38:31,895 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 02:38:31,896 - INFO - Handling market data API request
+2025-10-17 02:39:01,217 - INFO - OpenDeepSearch tool initialized successfully
+2025-10-17 02:39:01,217 - INFO - Sentient DeFi Agent initialized successfully
+2025-10-17 02:39:08,374 - INFO - GET request: /api/portfolio/analyze - Query: wallet=0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b6
+2025-10-17 02:39:08,375 - INFO - Analyzing portfolio for wallet: 0x742d35Cc...
+2025-10-17 02:39:08,375 - ERROR - Moralis API error: name 'os' is not defined
+2025-10-17 02:39:08,375 - INFO - Using simulated data for wallet: 0x742d35Cc...
+2025-10-17 02:39:35,751 - INFO - OpenDeepSearch tool initialized successfully
+2025-10-17 02:39:35,751 - INFO - Sentient DeFi Agent initialized successfully
+2025-10-17 02:39:38,487 - INFO - GET request: /api/portfolio/analyze - Query: wallet=0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b6
+2025-10-17 02:39:38,487 - INFO - Analyzing portfolio for wallet: 0x742d35Cc...
+2025-10-17 02:39:38,487 - ERROR - Moralis API error: name 'os' is not defined
+2025-10-17 02:39:38,487 - INFO - Using simulated data for wallet: 0x742d35Cc...
+2025-10-17 02:40:11,291 - INFO - OpenDeepSearch tool initialized successfully
+2025-10-17 02:40:11,291 - INFO - Sentient DeFi Agent initialized successfully
+2025-10-17 02:40:29,472 - INFO - GET request: /api/portfolio/analyze - Query: wallet=0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b6
+2025-10-17 02:40:29,473 - INFO - Analyzing portfolio for wallet: 0x742d35Cc...
+2025-10-17 02:40:29,473 - ERROR - Moralis API error: name 'os' is not defined
+2025-10-17 02:40:29,473 - INFO - Using simulated data for wallet: 0x742d35Cc...
+2025-10-17 02:40:33,922 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 02:40:33,922 - INFO - Handling market data API request
+2025-10-17 02:40:48,025 - ERROR - Error fetching yield opportunities: HTTPSConnectionPool(host='yields.llama.fi', port=443): Read timed out.
+2025-10-17 02:40:55,039 - INFO - OpenDeepSearch tool initialized successfully
+2025-10-17 02:40:55,039 - INFO - Sentient DeFi Agent initialized successfully
+2025-10-17 02:40:56,805 - INFO - GET request: /api/portfolio/analyze - Query: wallet=0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b6
+2025-10-17 02:40:56,805 - INFO - Analyzing portfolio for wallet: 0x742d35Cc...
+2025-10-17 02:40:56,805 - ERROR - Moralis API error: name 'os' is not defined
+2025-10-17 02:40:56,805 - INFO - Using simulated data for wallet: 0x742d35Cc...
+2025-10-17 02:41:23,059 - INFO - GET request: / - Query: 
+2025-10-17 02:41:27,960 - INFO - GET request: /portfolio - Query: 
+2025-10-17 02:41:34,450 - INFO - GET request: /api/portfolio/analyze - Query: wallet=0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b6
+2025-10-17 02:41:34,452 - INFO - Analyzing portfolio for wallet: 0x742d35Cc...
+2025-10-17 02:41:34,454 - ERROR - Moralis API error: name 'os' is not defined
+2025-10-17 02:41:34,454 - INFO - Using simulated data for wallet: 0x742d35Cc...
+2025-10-17 02:41:34,926 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 02:41:34,926 - INFO - Handling market data API request
+2025-10-17 02:41:46,971 - INFO - OpenDeepSearch tool initialized successfully
+2025-10-17 02:41:46,971 - INFO - Sentient DeFi Agent initialized successfully
+2025-10-17 02:41:49,871 - INFO - GET request: /api/portfolio/analyze - Query: wallet=0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b6
+2025-10-17 02:41:49,872 - INFO - Analyzing portfolio for wallet: 0x742d35Cc...
+2025-10-17 02:41:49,872 - INFO - Starting portfolio data fetch for wallet: 0x742d35Cc...
+2025-10-17 02:41:49,872 - ERROR - Moralis API error: name 'os' is not defined
+2025-10-17 02:41:49,872 - INFO - Using simulated data for wallet: 0x742d35Cc...
+2025-10-17 02:44:44,751 - INFO - OpenDeepSearch tool initialized successfully
+2025-10-17 02:44:44,751 - INFO - Sentient DeFi Agent initialized successfully
+2025-10-17 02:44:49,105 - INFO - GET request: /api/portfolio/analyze - Query: wallet=0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b6
+2025-10-17 02:44:49,105 - INFO - Analyzing portfolio for wallet: 0x742d35Cc...
+2025-10-17 02:44:49,105 - INFO - Starting portfolio data fetch for wallet: 0x742d35Cc...
+2025-10-17 02:44:49,105 - INFO - Attempting to fetch Moralis data for wallet: 0x742d35Cc...
+2025-10-17 02:44:49,105 - INFO - Making request to: https://deep-index.moralis.io/api/v2.2/0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b6/erc20
+2025-10-17 02:44:50,681 - INFO - Moralis API response status: 200
+2025-10-17 02:44:50,682 - INFO - Successfully fetched 2 positions from Moralis
+2025-10-17 02:44:50,683 - INFO - Successfully got real data from Moralis for wallet: 0x742d35Cc...
+2025-10-17 02:45:17,413 - INFO - GET request: / - Query: 
+2025-10-17 02:45:20,568 - INFO - GET request: /portfolio - Query: 
+2025-10-17 02:45:26,453 - INFO - GET request: /api/portfolio/analyze - Query: wallet=0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b6
+2025-10-17 02:45:26,454 - INFO - Analyzing portfolio for wallet: 0x742d35Cc...
+2025-10-17 02:45:26,454 - INFO - Starting portfolio data fetch for wallet: 0x742d35Cc...
+2025-10-17 02:45:26,454 - INFO - Attempting to fetch Moralis data for wallet: 0x742d35Cc...
+2025-10-17 02:45:26,454 - INFO - Making request to: https://deep-index.moralis.io/api/v2.2/0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b6/erc20
+2025-10-17 02:45:27,853 - INFO - Moralis API response status: 200
+2025-10-17 02:45:27,854 - INFO - Successfully fetched 2 positions from Moralis
+2025-10-17 02:45:27,856 - INFO - Successfully got real data from Moralis for wallet: 0x742d35Cc...
+2025-10-17 02:45:37,199 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 02:45:37,201 - INFO - Handling market data API request
+2025-10-17 02:45:43,073 - INFO - GET request: / - Query: 
+2025-10-17 02:45:48,385 - INFO - GET request: /yield-farming - Query: 
+2025-10-17 02:45:55,693 - INFO - GET request: / - Query: 
+2025-10-17 02:46:01,579 - INFO - GET request: /risk-analysis - Query: 
+2025-10-17 02:46:05,506 - INFO - GET request: / - Query: 
+2025-10-17 02:46:37,052 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 02:46:37,062 - INFO - Handling market data API request
+2025-10-17 02:46:50,403 - ERROR - Error fetching yield opportunities: HTTPSConnectionPool(host='yields.llama.fi', port=443): Read timed out.
+2025-10-17 02:47:37,157 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 02:47:37,158 - INFO - Handling market data API request
+2025-10-17 02:47:42,222 - INFO - GET request: / - Query: 
+2025-10-17 02:48:37,103 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 02:48:37,107 - INFO - Handling market data API request
+2025-10-17 02:49:37,197 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 02:49:37,200 - INFO - Handling market data API request
+2025-10-17 02:50:37,209 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 02:50:37,215 - INFO - Handling market data API request
+2025-10-17 02:50:50,603 - ERROR - Error fetching yield opportunities: HTTPSConnectionPool(host='yields.llama.fi', port=443): Read timed out.
+2025-10-17 02:51:37,175 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 02:51:37,179 - INFO - Handling market data API request
+2025-10-17 02:52:30,701 - INFO - OpenDeepSearch tool initialized successfully
+2025-10-17 02:52:30,702 - INFO - Sentient DeFi Agent initialized successfully
+2025-10-17 02:52:37,223 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 02:52:37,225 - INFO - Handling market data API request
+2025-10-17 02:52:50,951 - ERROR - Error fetching yield opportunities: HTTPSConnectionPool(host='yields.llama.fi', port=443): Read timed out.
+2025-10-17 02:52:50,954 - INFO - GET request: /yield-farming - Query: 
+2025-10-17 02:52:58,289 - INFO - GET request: / - Query: 
+2025-10-17 02:53:09,472 - INFO - GET request: / - Query: 
+2025-10-17 02:53:15,986 - INFO - GET request: / - Query: 
+2025-10-17 02:53:19,126 - INFO - GET request: /portfolio - Query: 
+2025-10-17 02:53:22,376 - INFO - GET request: /yield-farming - Query: 
+2025-10-17 02:53:28,076 - INFO - GET request: /risk-analysis - Query: 
+2025-10-17 02:53:37,156 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 02:53:37,161 - INFO - Handling market data API request
+2025-10-17 02:53:42,712 - INFO - GET request: /yield-farming - Query: 
+2025-10-17 02:53:46,419 - INFO - GET request: / - Query: 
+2025-10-17 02:54:37,123 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 02:54:37,125 - INFO - Handling market data API request
+2025-10-17 02:54:50,560 - ERROR - Error fetching yield opportunities: HTTPSConnectionPool(host='yields.llama.fi', port=443): Read timed out.
+2025-10-17 02:55:37,097 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 02:55:37,101 - INFO - Handling market data API request
+2025-10-17 02:56:37,031 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 02:56:37,033 - INFO - Handling market data API request
+2025-10-17 02:57:37,089 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 02:57:37,092 - INFO - Handling market data API request
+2025-10-17 02:58:37,044 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 02:58:37,050 - INFO - Handling market data API request
+2025-10-17 02:58:42,392 - INFO - GET request: /risk-analysis - Query: 
+2025-10-17 02:59:36,968 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 02:59:36,969 - INFO - Handling market data API request
+2025-10-17 02:59:50,732 - ERROR - Error fetching yield opportunities: HTTPSConnectionPool(host='yields.llama.fi', port=443): Read timed out.
+2025-10-17 03:00:37,108 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 03:00:37,123 - INFO - Handling market data API request
+2025-10-17 03:01:37,125 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 03:01:37,129 - INFO - Handling market data API request
+2025-10-17 03:01:44,956 - INFO - OpenDeepSearch tool initialized successfully
+2025-10-17 03:01:44,956 - INFO - Sentient DeFi Agent initialized successfully
+2025-10-17 03:01:56,289 - INFO - GET request: /risk-analysis - Query: 
+2025-10-17 03:02:08,175 - INFO - GET request: /risk-analysis - Query: 
+2025-10-17 03:02:22,964 - INFO - GET request: /risk-analysis - Query: 
+2025-10-17 03:02:30,259 - INFO - GET request: /risk-analysis - Query: 
+2025-10-17 03:02:35,416 - INFO - GET request: /risk-analysis - Query: 
+2025-10-17 03:02:37,048 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 03:02:37,058 - INFO - Handling market data API request
+2025-10-17 03:02:59,269 - INFO - GET request: / - Query: 
+2025-10-17 03:03:01,461 - INFO - GET request: /risk-analysis - Query: 
+2025-10-17 03:03:06,751 - INFO - GET request: /market-data - Query: 
+2025-10-17 03:03:06,876 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 03:03:06,876 - INFO - Handling market data API request
+2025-10-17 03:03:12,293 - INFO - GET request: / - Query: 
+2025-10-17 03:03:36,988 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 03:03:36,990 - INFO - Handling market data API request
+2025-10-17 03:04:37,057 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 03:04:37,066 - INFO - Handling market data API request
+2025-10-17 03:05:37,110 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 03:05:37,113 - INFO - Handling market data API request
+2025-10-17 03:05:51,078 - ERROR - Error fetching yield opportunities: HTTPSConnectionPool(host='yields.llama.fi', port=443): Read timed out.
+2025-10-17 03:06:36,997 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 03:06:37,000 - INFO - Handling market data API request
+2025-10-17 03:06:49,908 - ERROR - Error fetching yield opportunities: HTTPSConnectionPool(host='yields.llama.fi', port=443): Read timed out.
+2025-10-17 03:07:37,055 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 03:07:37,076 - INFO - Handling market data API request
+2025-10-17 03:07:51,453 - ERROR - Error fetching yield opportunities: HTTPSConnectionPool(host='yields.llama.fi', port=443): Read timed out.
+2025-10-17 03:08:37,056 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 03:08:37,057 - INFO - Handling market data API request
+2025-10-17 03:08:52,488 - ERROR - Error fetching TVL data: HTTPSConnectionPool(host='api.llama.fi', port=443): Read timed out. (read timeout=10)
+2025-10-17 03:09:02,682 - ERROR - Error fetching yield opportunities: HTTPSConnectionPool(host='yields.llama.fi', port=443): Read timed out. (read timeout=10)
+2025-10-17 03:09:37,028 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 03:09:37,032 - INFO - Handling market data API request
+2025-10-17 03:09:52,495 - ERROR - Error fetching TVL data: HTTPSConnectionPool(host='api.llama.fi', port=443): Read timed out. (read timeout=10)
+2025-10-17 03:10:02,699 - ERROR - Error fetching yield opportunities: HTTPSConnectionPool(host='yields.llama.fi', port=443): Read timed out. (read timeout=10)
+2025-10-17 03:10:37,069 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 03:10:37,076 - INFO - Handling market data API request
+2025-10-17 03:10:52,502 - ERROR - Error fetching TVL data: HTTPSConnectionPool(host='api.llama.fi', port=443): Read timed out. (read timeout=10)
+2025-10-17 03:11:02,697 - ERROR - Error fetching yield opportunities: HTTPSConnectionPool(host='yields.llama.fi', port=443): Read timed out. (read timeout=10)
+2025-10-17 03:11:37,126 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 03:11:37,133 - INFO - Handling market data API request
+2025-10-17 03:11:54,163 - ERROR - Error fetching TVL data: HTTPSConnectionPool(host='api.llama.fi', port=443): Read timed out. (read timeout=10)
+2025-10-17 03:12:37,119 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 03:12:37,126 - INFO - Handling market data API request
+2025-10-17 03:13:37,111 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 03:13:37,124 - INFO - Handling market data API request
+2025-10-17 03:14:37,001 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 03:14:37,002 - INFO - Handling market data API request
+2025-10-17 03:15:37,063 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 03:15:37,077 - INFO - Handling market data API request
+2025-10-17 03:16:37,183 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 03:16:37,189 - INFO - Handling market data API request
+2025-10-17 03:17:37,149 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 03:17:37,151 - INFO - Handling market data API request
+2025-10-17 03:18:37,201 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 03:18:37,210 - INFO - Handling market data API request
+2025-10-17 03:19:37,219 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 03:19:37,222 - INFO - Handling market data API request
+2025-10-17 03:20:37,223 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 03:20:37,238 - INFO - Handling market data API request
+2025-10-17 03:21:36,938 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 03:21:36,941 - INFO - Handling market data API request
+2025-10-17 03:22:37,269 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 03:22:37,271 - INFO - Handling market data API request
+2025-10-17 03:23:37,062 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 03:23:37,070 - INFO - Handling market data API request
+2025-10-17 03:24:37,087 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 03:24:37,091 - INFO - Handling market data API request
+2025-10-17 03:24:50,852 - ERROR - Error fetching yield opportunities: HTTPSConnectionPool(host='yields.llama.fi', port=443): Read timed out.
+2025-10-17 03:25:37,258 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 03:25:37,271 - INFO - Handling market data API request
+2025-10-17 03:26:37,320 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 03:26:37,344 - INFO - Handling market data API request
+2025-10-17 03:27:37,182 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 03:27:37,212 - INFO - Handling market data API request
+2025-10-17 03:28:37,108 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 03:28:37,110 - INFO - Handling market data API request
+2025-10-17 03:29:36,973 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 03:29:36,980 - INFO - Handling market data API request
+2025-10-17 03:29:51,100 - ERROR - Error fetching yield opportunities: HTTPSConnectionPool(host='yields.llama.fi', port=443): Read timed out.
+2025-10-17 03:30:37,208 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 03:30:37,219 - INFO - Handling market data API request
+2025-10-17 03:30:50,835 - ERROR - Error fetching yield opportunities: HTTPSConnectionPool(host='yields.llama.fi', port=443): Read timed out.
+2025-10-17 03:31:37,155 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 03:31:37,170 - INFO - Handling market data API request
+2025-10-17 03:32:37,003 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 03:32:37,008 - INFO - Handling market data API request
+2025-10-17 03:32:49,992 - ERROR - Error fetching TVL data: HTTPSConnectionPool(host='api.llama.fi', port=443): Read timed out.
+2025-10-17 03:33:02,820 - INFO - GET request: / - Query: 
+2025-10-17 03:33:08,407 - INFO - GET request: /api/gas-prices - Query: 
+2025-10-17 03:33:08,408 - INFO - Handling gas prices API request
+2025-10-17 03:33:14,062 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 03:33:14,062 - INFO - Handling market data API request
+2025-10-17 03:33:25,708 - INFO - GET request: /api/portfolio/analyze - Query: wallet=0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b6
+2025-10-17 03:33:25,711 - INFO - Analyzing portfolio for wallet: 0x742d35Cc...
+2025-10-17 03:33:25,711 - INFO - Starting portfolio data fetch for wallet: 0x742d35Cc...
+2025-10-17 03:33:25,711 - INFO - Attempting to fetch Moralis data for wallet: 0x742d35Cc...
+2025-10-17 03:33:25,711 - INFO - Making request to: https://deep-index.moralis.io/api/v2.2/0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b6/erc20
+2025-10-17 03:33:27,248 - INFO - Moralis API response status: 200
+2025-10-17 03:33:27,249 - INFO - Successfully fetched 2 positions from Moralis
+2025-10-17 03:33:27,250 - INFO - Successfully got real data from Moralis for wallet: 0x742d35Cc...
+2025-10-17 03:33:37,040 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 03:33:37,046 - INFO - Handling market data API request
+2025-10-17 03:33:50,404 - ERROR - Error fetching yield opportunities: HTTPSConnectionPool(host='yields.llama.fi', port=443): Read timed out.
+2025-10-17 03:33:50,416 - INFO - GET request: /api/sentient/info - Query: 
+2025-10-17 03:33:58,329 - INFO - POST request: /api/sentient/query
+2025-10-17 03:33:58,330 - INFO - Sentient query request: {'query': 'What are current gas prices?', 'context': {}}
+2025-10-17 03:33:58,331 - INFO - Processing Sentient query: What are current gas prices?
+2025-10-17 03:34:07,270 - INFO - GET request: /api/mev/status - Query: 
+2025-10-17 03:34:19,203 - INFO - GET request: /api/mev/alerts - Query: wallet=0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b6
+2025-10-17 03:34:36,576 - INFO - GET request: /portfolio - Query: 
+2025-10-17 03:34:37,150 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 03:34:37,154 - INFO - Handling market data API request
+2025-10-17 03:34:43,969 - INFO - GET request: /chat - Query: 
+2025-10-17 03:34:51,838 - INFO - POST request: /api/chat
+2025-10-17 03:34:51,839 - INFO - Handling chat API request
+2025-10-17 03:34:51,839 - INFO - Chat request data: {'message': 'What is DeFi?'}
+2025-10-17 03:34:51,839 - INFO - Processing message: 'What is DeFi?'
+2025-10-17 03:34:51,839 - INFO - Processing message: 'What is DeFi?'
+2025-10-17 03:34:51,839 - INFO - Using OpenDeepSearch for response generation
+2025-10-17 03:34:51,839 - INFO - Enhanced message: 
+                    You are a DeFi safety assistant with access to real-time web data. Please provide helpful, accurate information about:
+                    What is DeFi?
+                    
+     ...
+2025-10-17 03:34:51,840 - ERROR - OpenDeepSearch error: Event loop is closed
+2025-10-17 03:34:51,858 - INFO - Response payload: {'success': True, 'response': 'I encountered an error processing your request: What is DeFi?. Please try rephrasing your question.'}
+2025-10-17 03:34:51,858 - INFO - Processing time: 0.02s
+2025-10-17 03:35:37,164 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 03:35:37,184 - INFO - Handling market data API request
+2025-10-17 03:35:51,051 - ERROR - Error fetching yield opportunities: HTTPSConnectionPool(host='yields.llama.fi', port=443): Read timed out.
+2025-10-17 03:35:51,054 - INFO - GET request: / - Query: 
+2025-10-17 03:36:21,639 - INFO - GET request: / - Query: 
+2025-10-17 03:36:21,644 - INFO - GET request: /chat - Query: 
+2025-10-17 03:36:21,645 - INFO - GET request: /gas-prices - Query: 
+2025-10-17 03:36:21,646 - INFO - GET request: /market-data - Query: 
+2025-10-17 03:36:21,647 - INFO - GET request: /portfolio - Query: 
+2025-10-17 03:36:21,647 - INFO - GET request: /risk-analysis - Query: 
+2025-10-17 03:36:21,648 - INFO - GET request: /yield-farming - Query: 
+2025-10-17 03:36:21,648 - INFO - GET request: /api/gas-prices - Query: 
+2025-10-17 03:36:21,649 - INFO - Handling gas prices API request
+2025-10-17 03:36:22,408 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 03:36:22,408 - INFO - Handling market data API request
+2025-10-17 03:36:39,010 - INFO - GET request: /api/portfolio/analyze - Query: wallet=0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b6
+2025-10-17 03:36:39,010 - INFO - Analyzing portfolio for wallet: 0x742d35Cc...
+2025-10-17 03:36:39,010 - INFO - Starting portfolio data fetch for wallet: 0x742d35Cc...
+2025-10-17 03:36:39,010 - INFO - Attempting to fetch Moralis data for wallet: 0x742d35Cc...
+2025-10-17 03:36:39,010 - INFO - Making request to: https://deep-index.moralis.io/api/v2.2/0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b6/erc20
+2025-10-17 03:36:40,109 - INFO - Moralis API response status: 200
+2025-10-17 03:36:40,109 - INFO - Successfully fetched 2 positions from Moralis
+2025-10-17 03:36:40,110 - INFO - Successfully got real data from Moralis for wallet: 0x742d35Cc...
+2025-10-17 03:36:40,110 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 03:36:40,110 - INFO - Handling market data API request
+2025-10-17 03:36:53,135 - ERROR - Error fetching yield opportunities: HTTPSConnectionPool(host='yields.llama.fi', port=443): Read timed out.
+2025-10-17 03:36:53,136 - INFO - GET request: /api/sentient/info - Query: 
+2025-10-17 03:36:53,137 - INFO - POST request: /api/sentient/query
+2025-10-17 03:36:53,137 - INFO - Sentient query request: {'query': 'What is DeFi?', 'context': {}}
+2025-10-17 03:36:53,144 - INFO - Processing Sentient query: What is DeFi?
+2025-10-17 03:36:53,182 - ERROR - Error in general query handling: 'OpenDeepSearchTool' object has no attribute 'ask'
+2025-10-17 03:36:53,185 - INFO - GET request: /api/mev/status - Query: 
+2025-10-17 03:36:53,186 - INFO - GET request: /api/mev/alerts - Query: wallet=0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b6
+2025-10-17 03:36:53,187 - INFO - POST request: /api/mev/check
+2025-10-17 03:36:53,187 - INFO - Checking MEV risk for transaction
+2025-10-17 03:36:53,188 - INFO - POST request: /api/chat
+2025-10-17 03:36:53,188 - INFO - Handling chat API request
+2025-10-17 03:36:53,188 - INFO - Chat request data: {'message': 'Hello'}
+2025-10-17 03:36:53,188 - INFO - Processing message: 'Hello'
+2025-10-17 03:36:53,188 - INFO - Processing message: 'Hello'
+2025-10-17 03:36:53,188 - INFO - Using OpenDeepSearch for response generation
+2025-10-17 03:36:53,188 - INFO - Enhanced message: 
+                    You are a DeFi safety assistant with access to real-time web data. Please provide helpful, accurate information about:
+                    Hello
+                    
+             ...
+2025-10-17 03:36:53,188 - ERROR - OpenDeepSearch error: Event loop is closed
+2025-10-17 03:36:53,190 - INFO - Response payload: {'success': True, 'response': 'I encountered an error processing your request: Hello. Please try rephrasing your question.'}
+2025-10-17 03:36:53,190 - INFO - Processing time: 0.00s
+2025-10-17 03:37:37,103 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 03:37:37,110 - INFO - Handling market data API request
+2025-10-17 03:38:37,090 - INFO - GET request: /api/market-data - Query: 
+2025-10-17 03:38:37,097 - INFO - Handling market data API request

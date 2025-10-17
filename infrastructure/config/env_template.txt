@@ -7,3 +7,8 @@ JINA_API_KEY=your_jina_api_key_here
 LITELLM_API_KEY=your_litellm_api_key_here
 LITELLM_MODEL_ID=openrouter/google/gemini-2.0-flash-001
 ETHERSCAN_API_KEY=your_etherscan_api_key_here
+
+# Blockchain Data APIs (for real portfolio analysis)
+MORALIS_API_KEY=your_moralis_api_key_here
+ALCHEMY_API_KEY=your_alchemy_api_key_here
+DEBANK_API_KEY=your_debank_api_key_here
