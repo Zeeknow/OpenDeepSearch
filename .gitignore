@@ -119,3 +119,4 @@ celerybeat.pid
 .dmypy.json
 dmypy.json
 .env
+.env.example
